@@ -2,7 +2,6 @@ package lms;
 
 import BrahmasmiLiabrary.util;
 import org.jetbrains.annotations.NotNull;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
@@ -16,27 +15,29 @@ public class HomePage implements ActionListener, KeyListener {
     private final Connection con;
     private Student std;
     private final JTabbedPane mainTabbedPanel = new JTabbedPane();
-    private final JPanel studentPanel, studentDetailPanel;
-    private final JLabel[] studentInfoLabel = new JLabel[7];
+    private final JPanel newStudentPanel, newBookPanel;
+    private final JLabel[] studentInfoLabel  = new JLabel[7];
     private final JTextField[] studentInfoTextField = new JTextField[5];
     private JComboBox<String> courseComboBox;
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
-    private final JButton submitButton = new JButton("Submit");
-    private final JButton clearButton = new JButton("Clear");
+    private final JButton addStudentButton = new JButton("Submit");
+    private final JButton clearStudentButton = new JButton("Clear");
+    private final JButton addBookButton = new JButton("Submit");
+    private final JButton clearBookButton = new JButton("Clear");
+    private JTextField[] bookTextField;
 
     public HomePage() { // Non-Parameterized Constructor
         con = util.getConnectionWithMySQL("library","root","admin@2023");
         JFrame mainFrame = new JFrame("Home Page");
         mainTabbedPanel.setSize(700,400);
-        studentPanel = new JPanel(null);
-        studentDetailPanel = new JPanel(null);
-        mainTabbedPanel.add("Student", studentPanel);
-        mainTabbedPanel.add("Show Student", studentDetailPanel);
+        newStudentPanel = new JPanel(null);
+        newBookPanel = new JPanel(null);
+        mainTabbedPanel.add("Add Student", newStudentPanel);
+        mainTabbedPanel.add("Add Book", newBookPanel);
         initializeNewStudentFormPanel();
-        //initializeShowStudentPanel();
-
-        BrahmasmiLiabrary.util.setMainFrame(mainFrame,700,400);
+        initializeNewBookFormPanel();
+        BrahmasmiLiabrary.util.setMainFrame(mainFrame,mainTabbedPanel.getWidth(),mainTabbedPanel.getHeight());
         mainFrame.add(mainTabbedPanel);
     }
 
@@ -82,11 +83,41 @@ public class HomePage implements ActionListener, KeyListener {
 
         JTable table = new JTable(model);
         table.setBounds(0,0,mainTabbedPanel.getWidth(),mainTabbedPanel.getHeight());
-        studentDetailPanel.add(table);
+        newBookPanel.add(table);
+    }
+
+    void initializeNewBookFormPanel() {
+        String[] labelNames = {"Book Title","Book Author","Book Publisher","Department"};
+        JLabel[] bookLabel = new JLabel[labelNames.length];
+        bookTextField = new JTextField[labelNames.length];
+        int yAxisGap = 10;
+        for (int i = 0 ; i < bookLabel.length ; i++) {
+            bookLabel[i] = new JLabel(labelNames[i]);
+            bookTextField[i] = new JTextField(50);
+            bookLabel[i].setBounds(10,yAxisGap,100,30);
+            bookTextField[i].setBounds(120,yAxisGap,200,30);
+            newBookPanel.add(bookTextField[i]);
+            newBookPanel.add(bookLabel[i]);
+            yAxisGap+=30;
+        }
+        addBookButton.setBounds(120,30+bookTextField[bookTextField.length-1].getY()+5,90,30);
+        clearBookButton.setBounds(addBookButton.getX()+addBookButton.getWidth()+20,addBookButton.getY(),addBookButton.getWidth(),addBookButton.getHeight());
+        addBookButton.addActionListener(this);
+        clearBookButton.addActionListener(this);
+        newBookPanel.add(addBookButton);
+        newBookPanel.add(clearBookButton);
     }
 
     void initializeNewStudentFormPanel() {
-        String[] course = {"Select the course","B.Sc IT","B.A","B.Com","B.Sc FT","B.A. Yoga","B.Sc Home Science"};
+        String[] course = {
+                "Select the course",
+                "B.Sc Food Technology",
+                "B.Sc Home Science",
+                "B.Sc Information Technology",
+                "Bachelor of Arts",
+                "Bachelor of Arts in Yoga",
+                "Bachelor of Commerce"
+        };
         courseComboBox = new JComboBox<>(course);
         courseComboBox.setSelectedIndex(0);
         courseComboBox.setBounds(120,71,200,27);
@@ -97,34 +128,34 @@ public class HomePage implements ActionListener, KeyListener {
         genderButtonGroup.add(female);
         male.setBounds(120,130,100,30);
         female.setBounds(220,130,100,30);
-        studentPanel.add(male);
-        studentPanel.add(female);
+        newStudentPanel.add(male);
+        newStudentPanel.add(female);
 
         String[] labelNames = {"Student Name", "Father Name", "Course", "Age", "Gender", "Phone Number", "Address"};
         int y = 10, textFieldY = 10;
         for (int i = 0; i < 7; i++) {
             studentInfoLabel[i] = new JLabel(labelNames[i]);
             studentInfoLabel[i].setBounds(10, y, 100, 30);
-            studentPanel.add(studentInfoLabel[i]);
+            newStudentPanel.add(studentInfoLabel[i]);
             if (i<5) { // overtake the ArrayIndexOutOfBoundsException
                 textFieldY+=i==2?30:0;
                 textFieldY+=i==3?30:0;
                 studentInfoTextField[i] = new JTextField(20);
                 studentInfoTextField[i].setBounds(120, textFieldY, 200, 30);
-                studentPanel.add(studentInfoTextField[i]);
+                newStudentPanel.add(studentInfoTextField[i]);
                 textFieldY += 30;
             }
             y += studentInfoLabel[i].getHeight();
         }
         studentInfoTextField[2].addKeyListener(this);
         studentInfoTextField[3].addKeyListener(this);
-        submitButton.setBounds(studentInfoTextField[4].getX(),studentInfoTextField[4].getY()+35,90,30);
-        clearButton.setBounds(submitButton.getX()+110, submitButton.getY(),90,30);
-        studentPanel.add(courseComboBox);
-        studentPanel.add(submitButton);
-        studentPanel.add(clearButton);
-        submitButton.addActionListener(this);
-        clearButton.addActionListener(this);
+        addStudentButton.setBounds(studentInfoTextField[studentInfoTextField.length-1].getX(),studentInfoTextField[studentInfoTextField.length-1].getY()+35,90,30);
+        clearStudentButton.setBounds(addStudentButton.getX()+110, addStudentButton.getY(),90,30);
+        newStudentPanel.add(courseComboBox);
+        newStudentPanel.add(addStudentButton);
+        newStudentPanel.add(clearStudentButton);
+        addStudentButton.addActionListener(this);
+        clearStudentButton.addActionListener(this);
     }
 
     public void initializeStudentObject() {
@@ -197,7 +228,7 @@ public class HomePage implements ActionListener, KeyListener {
     
     @Override
     public void actionPerformed(@NotNull ActionEvent e) {
-        if (submitButton == e.getSource()) {
+        if (addStudentButton == e.getSource()) {
             if (studentFormValidation()) {
                 initializeStudentObject();
                 if (generateStudentObjectQuery())
@@ -208,7 +239,7 @@ public class HomePage implements ActionListener, KeyListener {
             else
                 JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
         }
-        if (clearButton == e.getSource())
+        if (clearStudentButton == e.getSource())
             clearStudentForm();
     }
 
