@@ -1,4 +1,4 @@
-package fms;
+package lms;
 
 public class Student {
     private String studentName, fatherName, course, phoneNumber, address, gender;

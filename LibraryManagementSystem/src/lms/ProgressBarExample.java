@@ -1,4 +1,4 @@
-package fms;
+package lms;
 import javax.swing.*;
 public class ProgressBarExample extends JFrame{
     JProgressBar jb;

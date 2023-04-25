@@ -2,36 +2,29 @@ package JavaLearning;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.Flow;
 
 class MyBorderLayout {
     JFrame frame;
     public MyBorderLayout() {
         frame = new JFrame("Border Layout");
+        //frame.setLayout(new BorderLayout(20,15));
+        frame.add(new JButton("North"), BorderLayout.NORTH);
+        frame.add(new JButton("South"), BorderLayout.SOUTH);
+        frame.add(new JButton("East"), BorderLayout.EAST);
+        frame.add(new JButton("West"), BorderLayout.WEST);
+        frame.add(new JButton("Center"), BorderLayout.CENTER);
+        frame.add(new JButton("North"), BorderLayout.NORTH);
+        frame.add(new JButton("South"), BorderLayout.SOUTH);
+        frame.add(new JButton("East"), BorderLayout.EAST);
+        frame.add(new JButton("West"), BorderLayout.WEST);
+        frame.add(new JButton("Center"), BorderLayout.CENTER);
         frame.setSize(300,300);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
     }
 
-    public void MyBorderOne() {
-        frame.add(new JButton("North"), BorderLayout.NORTH);
-        frame.add(new JButton("South"), BorderLayout.SOUTH);
-        frame.add(new JButton("East"), BorderLayout.EAST);
-        frame.add(new JButton("West"), BorderLayout.WEST);
-        frame.add(new JButton("Center"), BorderLayout.CENTER);
-    }
-
-    public void MyBorderTwo(int hGap, int vGap) {
-        frame.setLayout(new BorderLayout(hGap,vGap));
-        frame.add(new JButton("North"), BorderLayout.NORTH);
-        frame.add(new JButton("South"), BorderLayout.SOUTH);
-        frame.add(new JButton("East"), BorderLayout.EAST);
-        frame.add(new JButton("West"), BorderLayout.WEST);
-        frame.add(new JButton("Center"), BorderLayout.CENTER);
-    }
-
-    public void MyBorderThree(int hGap, int vGap) {
+    public void MyBorderThreeWithoutAnyPosition(int hGap, int vGap) {
         frame.setLayout(new BorderLayout(hGap,vGap));
         frame.add(new JButton("North"));
         frame.add(new JButton("East"));
@@ -86,8 +79,23 @@ class MyFlowLayout {
     }
 }
 
+
+class BoxLayout {
+    public BoxLayout() {
+        JFrame frame = new JFrame("Box Layout");
+        frame.setLayout(new javax.swing.BoxLayout(frame.getContentPane(), javax.swing.BoxLayout.X_AXIS));
+        frame.add(new JButton("1"));
+        frame.add(new JButton("2"));
+        frame.add(new JButton("3"));
+        frame.setSize(400,400);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+    }
+}
+
 public class MyLayout {
     public static void main(String[] args) {
-        new MyFlowLayout();
+        new BoxLayout();
     }
 }

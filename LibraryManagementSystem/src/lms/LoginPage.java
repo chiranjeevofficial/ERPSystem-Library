@@ -1,4 +1,4 @@
-package fms;
+package lms;
 
 import BrahmasmiLiabrary.*;
 import javax.swing.*;
