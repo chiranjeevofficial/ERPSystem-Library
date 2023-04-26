@@ -13,11 +13,22 @@ import java.util.ArrayList;
 
 public class HomePage implements ActionListener, KeyListener {
     private final Connection con;
+    String[] course = {
+            "Select the course",
+            "B.Sc Food Technology",
+            "B.Sc Home Science",
+            "B.Sc Information Technology",
+            "Bachelor of Arts",
+            "Bachelor of Arts in Yoga",
+            "Bachelor of Commerce"
+    };
     private Student std;
+    private Book book;
     private final JTabbedPane mainTabbedPanel = new JTabbedPane();
     private final JPanel newStudentPanel, newBookPanel;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private final JTextField[] studentInfoTextField = new JTextField[5];
+    private JComboBox<String> bookCourseComboBox;
     private JComboBox<String> courseComboBox;
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
@@ -89,18 +100,23 @@ public class HomePage implements ActionListener, KeyListener {
     void initializeNewBookFormPanel() {
         String[] labelNames = {"Book Title","Book Author","Book Publisher","Department"};
         JLabel[] bookLabel = new JLabel[labelNames.length];
-        bookTextField = new JTextField[labelNames.length];
+        bookCourseComboBox = new JComboBox<>(course);
+        bookTextField = new JTextField[3];
         int yAxisGap = 10;
         for (int i = 0 ; i < bookLabel.length ; i++) {
             bookLabel[i] = new JLabel(labelNames[i]);
-            bookTextField[i] = new JTextField(50);
             bookLabel[i].setBounds(10,yAxisGap,100,30);
-            bookTextField[i].setBounds(120,yAxisGap,200,30);
-            newBookPanel.add(bookTextField[i]);
+            if (i < 3) {
+                bookTextField[i] = new JTextField(50);
+                bookTextField[i].setBounds(120, yAxisGap, 200, 30);
+                newBookPanel.add(bookTextField[i]);
+            }
+            bookCourseComboBox.setBounds(120,yAxisGap,200,30);
+            newBookPanel.add(bookCourseComboBox);
             newBookPanel.add(bookLabel[i]);
             yAxisGap+=30;
         }
-        addBookButton.setBounds(120,30+bookTextField[bookTextField.length-1].getY()+5,90,30);
+        addBookButton.setBounds(120,60+bookTextField[bookTextField.length-1].getY()+5,90,30);
         clearBookButton.setBounds(addBookButton.getX()+addBookButton.getWidth()+20,addBookButton.getY(),addBookButton.getWidth(),addBookButton.getHeight());
         addBookButton.addActionListener(this);
         clearBookButton.addActionListener(this);
@@ -109,15 +125,6 @@ public class HomePage implements ActionListener, KeyListener {
     }
 
     void initializeNewStudentFormPanel() {
-        String[] course = {
-                "Select the course",
-                "B.Sc Food Technology",
-                "B.Sc Home Science",
-                "B.Sc Information Technology",
-                "Bachelor of Arts",
-                "Bachelor of Arts in Yoga",
-                "Bachelor of Commerce"
-        };
         courseComboBox = new JComboBox<>(course);
         courseComboBox.setSelectedIndex(0);
         courseComboBox.setBounds(120,71,200,27);
@@ -178,6 +185,13 @@ public class HomePage implements ActionListener, KeyListener {
         courseComboBox.setSelectedIndex(0);
     }
 
+    public void clearBookForm() {
+        for (JTextField jTextField : bookTextField)
+            jTextField.setText("");
+        if (bookCourseComboBox.getSelectedIndex() != 0)
+            bookCourseComboBox.setSelectedIndex(0);
+    }
+
     public char getGenderSelected() {
         return male.isSelected()?'M':'F';
     }
@@ -196,6 +210,20 @@ public class HomePage implements ActionListener, KeyListener {
         }
         validate = validate && (male.isSelected() || female.isSelected());
         if (courseComboBox.getSelectedIndex() == 0)
+            validate = false;
+        System.out.println(validate ? "true" : "false");
+        return validate;
+    }
+
+    public boolean bookFormValidation() {
+        boolean validate = true;
+        for (int i = 0; i < bookTextField.length; i++) {
+            if (bookTextField[i].getText().equals("") || bookTextField[i].getText().length() < 3) {
+                validate = false;
+                break;
+            }
+        }
+        if (bookCourseComboBox.getSelectedIndex() == 0)
             validate = false;
         System.out.println(validate ? "true" : "false");
         return validate;
@@ -241,6 +269,20 @@ public class HomePage implements ActionListener, KeyListener {
         }
         if (clearStudentButton == e.getSource())
             clearStudentForm();
+        if (addBookButton == e.getSource()) {
+            if (bookFormValidation()) {
+                book = new Book();
+                book.setTitle(bookTextField[0].getText());
+                book.setAuthor(bookTextField[1].getText());
+                book.setPublisher(bookTextField[2].getText());
+                book.setDepartment(bookCourseComboBox.getItemAt(bookCourseComboBox.getSelectedIndex()));
+                System.out.println(book);
+                clearBookForm();
+            }
+        }
+        if (clearBookButton == e.getSource()) {
+            clearBookForm();
+        }
     }
 
     @Override
