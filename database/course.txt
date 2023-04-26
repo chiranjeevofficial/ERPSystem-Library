@@ -1,0 +1,8 @@
+insert into course (course_name) values
+('B.Sc Food Technology'),
+('B.Sc Home Science'),
+('B.Sc Information Technology'),
+('Bachelor of Arts'),
+('Bachelor of Arts in Yoga'),
+('Bachelor of Commerce');
+

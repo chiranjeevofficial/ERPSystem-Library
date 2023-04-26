@@ -1,0 +1,22 @@
+CREATE TABLE student (
+  student_id INT PRIMARY KEY AUTO_INCREMENT,
+  student_name VARCHAR(100) NOT NULL,
+  father_name VARCHAR(100) NOT NULL,
+  course INT NOT NULL,
+  date_of_birth DATE NOT NULL,
+  gender CHAR(1) NOT NULL,
+  phone_number VARCHAR(20),
+  address VARCHAR(255) NOT NULL,
+  FOREIGN KEY (course) REFERENCES course(course_id)
+);
+
+INSERT INTO student VALUES (
+  2,
+  'Chiranjeev Kashyap',
+  'Virendra Kashyap',
+  10,
+  '2002-05-18',
+  'M',
+  '7983499388',
+  'Shanti Nagar, Rishikesh'
+);

@@ -1,0 +1,14 @@
+create table book (
+ book_id int primary key auto_increment,
+ title varchar(50) not null,
+ author varchar(50) not null,
+ publisher varchar(50) not null,
+ edition varchar(50) not null,
+ course int not null,
+ quantity int not null,
+ price decimal(10,2) not null,
+ FOREIGN KEY (course) REFERENCES course(course_id)
+);
+
+insert into book values (1,'Java','Aadi Yogi','DEV','1 edition',3,12,348.60);
+
