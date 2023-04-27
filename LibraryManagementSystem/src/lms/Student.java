@@ -1,10 +1,25 @@
 package lms;
 
-public class Student {
-    private String studentName, fatherName, course, phoneNumber, address, gender;
-    private int studentId, age;
+import java.util.Date;
 
-    public Student(int studentId, String studentName, String fatherName, String course, int age, String gender, String phoneNumber, String address) {
+public class Student {
+    private String studentName, fatherName, phoneNumber, address, gender;
+    private int studentId, course;
+    private Date dateOfBirth;
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Student(int studentId, String studentName, String fatherName, int course, String gender, String phoneNumber, String address) {
         this.studentName = studentName;
         this.fatherName = fatherName;
         this.course = course;
@@ -12,7 +27,6 @@ public class Student {
         this.address = address;
         this.gender = gender;
         this.studentId = Integer.parseInt(String.valueOf(studentId));
-        this.age = Integer.parseInt(String.valueOf(age));
     }
 
     public void setStudentName(String studentName) {
@@ -23,7 +37,7 @@ public class Student {
         this.fatherName = fatherName;
     }
 
-    public void setCourse(String course) {
+    public void setCourse(int course) {
         this.course = course;
     }
 
@@ -37,10 +51,6 @@ public class Student {
 
     public void setStudentId(int studentId) {
         this.studentId = studentId;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public void setGender(char gender) {
@@ -57,7 +67,7 @@ public class Student {
         return fatherName;
     }
 
-    public String getCourse() {
+    public int getCourse() {
         return course;
     }
 
@@ -73,10 +83,6 @@ public class Student {
         return studentId;
     }
 
-    public int getAge() {
-        return age;
-    }
-
     public String getGender() {
         return gender;
     }
@@ -86,7 +92,6 @@ public class Student {
                 getStudentName()+" "+
                 getFatherName()+" "+
                 getCourse()+" "+
-                getAge()+" "+
                 getGender()+" "+
                 getPhoneNumber()+" "+
                 getAddress();

@@ -1,8 +1,16 @@
-insert into course (course_name) values
+create table course (
+    `Course Id` int primary key auto_increment,
+    `Course Name` varchar(100) not null
+)
+
+insert into course (`Course Name`) values
 ('B.Sc Food Technology'),
 ('B.Sc Home Science'),
 ('B.Sc Information Technology'),
 ('Bachelor of Arts'),
 ('Bachelor of Arts in Yoga'),
 ('Bachelor of Commerce');
+
+ALTER TABLE course CHANGE course_id `Course Id` int primary key auto_increment;
+
 

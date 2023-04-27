@@ -1,13 +1,13 @@
 CREATE TABLE student (
-  student_id INT PRIMARY KEY AUTO_INCREMENT,
-  student_name VARCHAR(100) NOT NULL,
-  father_name VARCHAR(100) NOT NULL,
-  course INT NOT NULL,
-  date_of_birth DATE NOT NULL,
-  gender CHAR(1) NOT NULL,
-  phone_number VARCHAR(20),
-  address VARCHAR(255) NOT NULL,
-  FOREIGN KEY (course) REFERENCES course(course_id)
+`Student Id` INT PRIMARY KEY AUTO_INCREMENT,
+`Student Name` VARCHAR(100) NOT NULL,
+`Father Name` VARCHAR(100) NOT NULL,
+`Course` INT NOT NULL,
+`Date Of Birth` varchar(20) NOT NULL,
+`Gender` CHAR(1) NOT NULL,
+`Phone Number` VARCHAR(20),
+`Address` VARCHAR(255) NOT NULL,
+FOREIGN KEY (`Course`) REFERENCES `course`(`Course Id`)
 );
 
 INSERT INTO student VALUES (

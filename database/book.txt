@@ -1,14 +1,19 @@
 create table book (
- book_id int primary key auto_increment,
- title varchar(50) not null,
- author varchar(50) not null,
- publisher varchar(50) not null,
- edition varchar(50) not null,
- course int not null,
- quantity int not null,
- price decimal(10,2) not null,
- FOREIGN KEY (course) REFERENCES course(course_id)
+`Book Id` int primary key auto_increment,
+`Title` varchar(50) not null,
+`Author` varchar(50) not null,
+`Publisher` varchar(50) not null,
+`Edition` varchar(50) not null,
+`Course` int not null,
+`Quantity` int not null,
+`Price` decimal(10,2) not null,
+FOREIGN KEY (Course) REFERENCES course(`Course Id`)
 );
 
 insert into book values (1,'Java','Aadi Yogi','DEV','1 edition',3,12,348.60);
+
+INSERT INTO book (title, author, publisher, edition, course, quantity, price) VALUES 
+ ('Python', 'Guido Van Rausom', 'DEV', 'First', 3, 50, 670.99);
+
+
 
