@@ -9,14 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-
-import static com.sun.tools.javac.util.Constants.format;
-
-//import static com.sun.tools.javac.util.Constants.format;
 
 public class HomePage implements ActionListener, KeyListener {
     private final Connection con;
@@ -32,7 +25,6 @@ public class HomePage implements ActionListener, KeyListener {
     };
     private Student std;
     private Book book;
-    String dobDateChooserDateInString;
     private final JPanel newStudentPanel, newBookPanel;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private JTextField[] studentInfoTextField;
@@ -41,7 +33,6 @@ public class HomePage implements ActionListener, KeyListener {
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
     private JDateChooser dobDateChooser;
-    Date date;
     private final JButton addStudentButton = new JButton("Submit");
     private final JButton clearStudentButton = new JButton("Clear");
     private final JButton addBookButton = new JButton("Submit");
@@ -63,52 +54,6 @@ public class HomePage implements ActionListener, KeyListener {
         mainFrame.add(mainTabbedPanel);
     }
 
-    /*void initializeShowStudentPanel() {
-        ArrayList<Student> studentList = new ArrayList<>();
-
-        // Retrieve data from the database and add to the list
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM student");
-            while(rs.next()) {
-                Student student = new Student(rs.getInt("studentId"), rs.getString("studentName"), rs.getString("fatherName"), rs.getString("course"), rs.getInt("age"), rs.getString("gender"), rs.getString("phoneNumber"), rs.getString("address"));
-                studentList.add(student);
-            }
-            con.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        // Display the data in a table
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Student ID");
-        model.addColumn("Student Name");
-        model.addColumn("Father Name");
-        model.addColumn("Course");
-        model.addColumn("Age");
-        model.addColumn("Gender");
-        model.addColumn("Phone Number");
-        model.addColumn("Address");
-
-        for(Student student : studentList) {
-            Object[] row = new Object[8];
-            row[0] = student.getStudentId();
-            row[1] = student.getStudentName();
-            row[2] = student.getFatherName();
-            row[3] = student.getCourse();
-            row[4] = student.getAge();
-            row[5] = student.getGender();
-            row[6] = student.getPhoneNumber();
-            row[7] = student.getAddress();
-            model.addRow(row);
-        }
-
-        JTable table = new JTable(model);
-        table.setBounds(0,0,mainTabbedPanel.getWidth(),mainTabbedPanel.getHeight());
-        newBookPanel.add(table);
-    }**/
-
-
     void initializeNewStudentFormPanel() {
         courseComboBox = new JComboBox<>(course);
         courseComboBox.setSelectedIndex(0);
@@ -123,15 +68,8 @@ public class HomePage implements ActionListener, KeyListener {
         newStudentPanel.add(male);
         newStudentPanel.add(female);
         studentInfoTextField = new JTextField[4];
-
         dobDateChooser = new JDateChooser();
-        dobDateChooser.setDateFormatString("yyyy-MM-dd");
-
-
-
-        /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = dateFormat.format(dobDateChooser.getDate());
-        System.out.println(String.valueOf(new SimpleDateFormat(format(dobDateChooser.getDate()))));**/
+        dobDateChooser.getDateEditor().setEnabled(false);
 
         String[] labelNames = {"Student Name", "Father Name", "Course", "Date of Birth", "Gender", "Phone Number", "Address"};
         int labelYAxisGap = 10, textFieldYAxisGap = 10;
@@ -148,16 +86,16 @@ public class HomePage implements ActionListener, KeyListener {
                 textFieldYAxisGap += 30;
             }
         }
+        studentInfoTextField[studentInfoTextField.length-2].addKeyListener(this);
         dobDateChooser.setBounds(120,studentInfoTextField[1].getY()+60,200,27);
-        studentInfoTextField[studentInfoTextField.length-1].addKeyListener(this);
         addStudentButton.setBounds(studentInfoTextField[studentInfoTextField.length-1].getX(),studentInfoTextField[studentInfoTextField.length-1].getY()+35,90,30);
         clearStudentButton.setBounds(addStudentButton.getX()+110, addStudentButton.getY(),addStudentButton.getWidth(),addStudentButton.getHeight());
+        addStudentButton.addActionListener(this);
+        clearStudentButton.addActionListener(this);
         newStudentPanel.add(courseComboBox);
         newStudentPanel.add(addStudentButton);
         newStudentPanel.add(clearStudentButton);
         newStudentPanel.add(dobDateChooser);
-        addStudentButton.addActionListener(this);
-        clearStudentButton.addActionListener(this);
     }
 
     void initializeNewBookFormPanel() {
@@ -199,10 +137,10 @@ public class HomePage implements ActionListener, KeyListener {
         std.setStudentName(studentInfoTextField[0].getText());
         std.setFatherName(studentInfoTextField[1].getText());
         std.setCourse(courseComboBox.getSelectedIndex());
-        std.setDateOfBirth(dobDateChooserDateInString);
+        std.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(dobDateChooser.getDate()));
         std.setGender(getGenderSelected());
-        std.setPhoneNumber(studentInfoTextField[3].getText());
-        std.setAddress(studentInfoTextField[4].getText());
+        std.setPhoneNumber(studentInfoTextField[2].getText());
+        std.setAddress(studentInfoTextField[3].getText());
         System.out.println(std);
     }
 
@@ -220,10 +158,10 @@ public class HomePage implements ActionListener, KeyListener {
     }
 
     public void clearStudentForm() {
-        for (int i = 0 ; i < 5; i++)
-            studentInfoTextField[i].setText("");
+        for (JTextField jTextField : studentInfoTextField) jTextField.setText("");
         genderButtonGroup.clearSelection();
         courseComboBox.setSelectedIndex(0);
+        dobDateChooser.setDate(null);
     }
 
     public void clearBookForm() {
@@ -239,8 +177,8 @@ public class HomePage implements ActionListener, KeyListener {
 
     public boolean studentFormValidation() {
         boolean validate = true;
-        for (int i = 0; i < studentInfoTextField.length; i++) {
-            if (studentInfoTextField[i].getText().equals("") || studentInfoTextField[i].getText().length() < 3) {
+        for (JTextField jTextField : studentInfoTextField) {
+            if (jTextField.getText().equals("") || jTextField.getText().length() < 3) {
                 validate = false;
                 break;
             }
@@ -248,8 +186,7 @@ public class HomePage implements ActionListener, KeyListener {
         validate = validate && (male.isSelected() || female.isSelected());
         if (courseComboBox.getSelectedIndex() == 0)
             validate = false;
-        dobDateChooserDateInString = new SimpleDateFormat("yyyy-MM-dd").format(dobDateChooser.getDate());
-        if (dobDateChooserDateInString.equals(String.valueOf(LocalDate.now().getYear())))
+        if (dobDateChooser.getDate() == null)
             validate = false;
         System.out.println(validate ? "true" : "false");
         return validate;
@@ -276,7 +213,7 @@ public class HomePage implements ActionListener, KeyListener {
     public boolean generateStudentObjectQuery() {
         boolean validate = true;
         try {
-            String query = "INSERT INTO student (student_name, father_name, course, date_of_birth, gender, phone_number, address) " +
+            String query = "INSERT INTO student (`Student Name`, `Father Name`, Course, `Date Of Birth`, Gender, `Phone Number`, Address) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
             preStmt = con.prepareStatement(query);
 
@@ -284,7 +221,7 @@ public class HomePage implements ActionListener, KeyListener {
             preStmt.setString(1, std.getStudentName());
             preStmt.setString(2, std.getFatherName());
             preStmt.setInt(3, std.getCourse());
-            //preStmt.setDate(4, std.getDateOfBirth());
+            preStmt.setString(4, std.getDateOfBirth());
             preStmt.setString(5, std.getGender());
             preStmt.setString(6, std.getPhoneNumber());
             preStmt.setString(7, std.getAddress());
@@ -333,7 +270,6 @@ public class HomePage implements ActionListener, KeyListener {
             }
             else
                 JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
-            //String newDate = new SimpleDateFormat("yyyy-MM-dd").format(dobDateChooser.getDate());
         }
         if (clearStudentButton == e.getSource())
             clearStudentForm();
@@ -355,11 +291,11 @@ public class HomePage implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if (e.getSource() == studentInfoTextField[studentInfoTextField.length-1]) { //textField validation for phone number
+        if (e.getSource() == studentInfoTextField[studentInfoTextField.length-2]) { //textField validation for phone number
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
-            if (studentInfoTextField[3].getText().length() >= 10)
+            if (studentInfoTextField[studentInfoTextField.length-2].getText().length() >= 10)
                 e.consume();
         }
         if (e.getSource() == bookTextField[4]) {

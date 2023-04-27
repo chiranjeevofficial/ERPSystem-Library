@@ -3,19 +3,18 @@ package lms;
 import java.util.Date;
 
 public class Student {
-    private String studentName, fatherName, phoneNumber, address, gender;
+    private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, course;
-    private Date dateOfBirth;
 
     public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public Date getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
