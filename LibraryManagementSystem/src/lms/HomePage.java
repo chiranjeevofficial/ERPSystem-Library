@@ -25,7 +25,7 @@ public class HomePage implements ActionListener, KeyListener {
     };
     private Student std;
     private Book book;
-    private final JPanel newStudentPanel, newBookPanel;
+    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private JTextField[] studentInfoTextField;
     private JComboBox<String> bookCourseComboBox;
@@ -46,10 +46,14 @@ public class HomePage implements ActionListener, KeyListener {
         mainTabbedPanel.setSize(700,400);
         newStudentPanel = new JPanel(null);
         newBookPanel = new JPanel(null);
+        issuedBookPanel = new JPanel(null);
         mainTabbedPanel.add("Add Student", newStudentPanel);
         mainTabbedPanel.add("Add Book", newBookPanel);
+        mainTabbedPanel.add("Issue Book",issuedBookPanel);
+        mainTabbedPanel.setSelectedIndex(2);
         initializeNewStudentFormPanel();
         initializeNewBookFormPanel();
+        initializeIssuedBookFormPanel();
         BrahmasmiLiabrary.util.setMainFrame(mainFrame, mainTabbedPanel.getWidth(), mainTabbedPanel.getHeight());
         mainFrame.add(mainTabbedPanel);
     }
@@ -129,6 +133,39 @@ public class HomePage implements ActionListener, KeyListener {
         bookTextField[5].addKeyListener(this);
         newBookPanel.add(addBookButton);
         newBookPanel.add(clearBookButton);
+    }
+
+    public void initializeIssuedBookFormPanel() {
+        JTextField[] issuedBookTextField = new JTextField[2];
+        String[] labelString = {"Student Id", "Book Id", "Issue Date", "Due Date"};
+        String[] buttonLabel = {"Submit","Clear"};
+        JLabel[] issuedBookLabel = new JLabel[labelString.length];
+        JDateChooser[] issuedBookDateChooser = new JDateChooser[2];
+        JButton[] issuedBookButton = new JButton[2];
+        int yAxisGap = 10, yAxisGapDC = 70, xAxisGapButton = 120;
+        for(int i = 0 ; i < labelString.length ; i++) {
+            issuedBookLabel[i] = new JLabel(labelString[i]);
+            issuedBookLabel[i].setBounds(10,yAxisGap,100,30);
+            issuedBookPanel.add(issuedBookLabel[i]);
+            if (i < issuedBookTextField.length) {
+                issuedBookTextField[i] = new JTextField(20);
+                issuedBookTextField[i].setBounds(120,yAxisGap,200,30);
+                issuedBookPanel.add(issuedBookTextField[i]);
+            }
+            if (i < issuedBookDateChooser.length) {
+                issuedBookDateChooser[i] = new JDateChooser();
+                issuedBookDateChooser[i].setBounds(120,yAxisGapDC,200,30);
+                issuedBookPanel.add(issuedBookDateChooser[i]);
+                yAxisGapDC += 30;
+            }
+            if (i < issuedBookButton.length) {
+                issuedBookButton[i] = new JButton(buttonLabel[i]);
+                issuedBookButton[i].setBounds(xAxisGapButton,135,95,30);
+                issuedBookPanel.add(issuedBookButton[i]);
+                xAxisGapButton += 105;
+            }
+            yAxisGap += 30;
+        }
     }
 
     public void initializeStudentObject() {
