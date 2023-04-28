@@ -6,10 +6,6 @@ public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, course;
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
     public String getDateOfBirth() {
         return dateOfBirth;
     }

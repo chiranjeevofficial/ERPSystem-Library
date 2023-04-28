@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
-public class HomePage implements ActionListener, KeyListener {
+public class HomePage implements ActionListener, KeyListener {           
     private final Connection con;
     private PreparedStatement preStmt;
     String[] course = {
