@@ -1,7 +1,5 @@
 package lms;
 
-import java.util.Date;
-
 public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, course;

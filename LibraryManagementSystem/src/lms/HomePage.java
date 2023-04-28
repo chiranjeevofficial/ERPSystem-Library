@@ -29,7 +29,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     private JComboBox<String> courseComboBox;
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
-    private JDateChooser dobDateChooser, bookDateChooser;
+    private JDateChooser studentDateChooser, bookDateChooser;
     private final JButton addStudentButton = new JButton("Submit");
     private final JButton clearStudentButton = new JButton("Clear");
     private final JButton addBookButton = new JButton("Submit");
@@ -72,8 +72,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         newStudentPanel.add(male);
         newStudentPanel.add(female);
         studentInfoTextField = new JTextField[4];
-        dobDateChooser = new JDateChooser();
-        dobDateChooser.getDateEditor().setEnabled(false);
+        studentDateChooser = new JDateChooser();
 
         String[] labelNames = {"Student Name", "Father Name", "Course", "Date of Birth", "Gender", "Phone Number", "Address"};
         int labelYAxisGap = 10, textFieldYAxisGap = 10;
@@ -91,15 +90,18 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             }
         }
         studentInfoTextField[studentInfoTextField.length-2].addKeyListener(this);
-        dobDateChooser.setBounds(120,studentInfoTextField[1].getY()+60,200,27);
+        studentDateChooser.setBounds(120,studentInfoTextField[1].getY()+60,200,27);
         addStudentButton.setBounds(studentInfoTextField[studentInfoTextField.length-1].getX(),studentInfoTextField[studentInfoTextField.length-1].getY()+35,90,30);
         clearStudentButton.setBounds(addStudentButton.getX()+110, addStudentButton.getY(),addStudentButton.getWidth(),addStudentButton.getHeight());
+        JTextField studentDateChooserTextField = (JTextField) studentDateChooser.getDateEditor().getUiComponent();
+        studentDateChooserTextField.setDisabledTextColor(Color.BLACK);
+        studentDateChooser.getDateEditor().setEnabled(false);
         addStudentButton.addActionListener(this);
         clearStudentButton.addActionListener(this);
         newStudentPanel.add(courseComboBox);
         newStudentPanel.add(addStudentButton);
         newStudentPanel.add(clearStudentButton);
-        newStudentPanel.add(dobDateChooser);
+        newStudentPanel.add(studentDateChooser);
     }
 
     void initializeNewBookFormPanel() {
@@ -206,7 +208,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         std.setStudentName(studentInfoTextField[0].getText());
         std.setFatherName(studentInfoTextField[1].getText());
         std.setCourse(courseComboBox.getSelectedIndex());
-        std.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(dobDateChooser.getDate()));
+        std.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(studentDateChooser.getDate()));
         std.setGender(getGenderSelected());
         std.setPhoneNumber(studentInfoTextField[2].getText());
         std.setAddress(studentInfoTextField[3].getText());
@@ -231,7 +233,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         for (JTextField jTextField : studentInfoTextField) jTextField.setText("");
         genderButtonGroup.clearSelection();
         courseComboBox.setSelectedIndex(0);
-        dobDateChooser.setDate(null);
+        studentDateChooser.setDate(null);
     }
 
     public void clearBookForm() {
@@ -259,7 +261,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         validate = validate && (male.isSelected() || female.isSelected());
         if (courseComboBox.getSelectedIndex() == 0)
             validate = false;
-        if (dobDateChooser.getDate() == null)
+        if (studentDateChooser.getDate() == null)
             validate = false;
         System.out.println(validate ? "true" : "false");
         return validate;
