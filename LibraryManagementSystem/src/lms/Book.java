@@ -1,9 +1,17 @@
 package lms;
 
 public class Book {
-    private String title, author, publisher, edition;
-    private int book_id, course, quantity;
+    private String title, author, publisher, edition, date;
+    private int bookId, course, quantity;
     private double price;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getEdition() {
         return edition;
@@ -13,12 +21,12 @@ public class Book {
         this.edition = edition;
     }
 
-    public int getBook_id() {
-        return book_id;
+    public int getBookId() {
+        return bookId;
     }
 
-    public void setBook_id(int book_id) {
-        this.book_id = book_id;
+    public void setBookId(int bookId) {
+        this.bookId = bookId;
     }
 
     public int getCourse() {
@@ -71,12 +79,13 @@ public class Book {
 
     @Override
     public String toString() {
-        return  getBook_id()+" "+
+        return  getBookId()+" "+
                 getTitle()+" "+
                 getAuthor()+" "+
                 getPublisher()+" "+
                 getEdition()+" "+
                 getCourse()+" "+
+                getDate()+" "+
                 getQuantity()+" "+
                 getPrice();
     }
