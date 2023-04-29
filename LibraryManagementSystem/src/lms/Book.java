@@ -2,7 +2,7 @@ package lms;
 
 public class Book {
     private String title, author, publisher, edition, date;
-    private int bookId, course, quantity;
+    private int accessionId, course, quantity;
     private double price;
 
     public String getDate() {
@@ -21,12 +21,12 @@ public class Book {
         this.edition = edition;
     }
 
-    public int getBookId() {
-        return bookId;
+    public int getAccessionId() {
+        return accessionId;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public void setAccessionId(int accessionId) {
+        this.accessionId = accessionId;
     }
 
     public int getCourse() {
@@ -79,7 +79,7 @@ public class Book {
 
     @Override
     public String toString() {
-        return  getBookId()+" "+
+        return  getAccessionId()+" "+
                 getTitle()+" "+
                 getAuthor()+" "+
                 getPublisher()+" "+

@@ -12,6 +12,7 @@ import java.util.Date;
 
 public class HomePage implements ActionListener, KeyListener, ItemListener {
     private final Connection con;
+    private PreparedStatement preStmt;
     String[] course = {
             "Select the course",
             "B.Sc Food Technology",
@@ -22,6 +23,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             "Bachelor of Commerce"
     };
     private Student std;
+    private Book book;
     private final JPanel newStudentPanel, newBookPanel, issuedBookPanel;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private JTextField[] studentInfoTextField;
@@ -36,7 +38,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     private final JButton clearBookButton = new JButton("Clear");
     private JTextField[] bookTextField;
     JCheckBox accessionIdCheckBox;
-    String latestAccessionId = "1280";
+    int latestAccessionId;
 
     public HomePage() { // Non-Parameterized Constructor
         con = util.getConnectionWithMySQL("library","root","admin@2023");
@@ -105,6 +107,16 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     }
 
     void initializeNewBookFormPanel() {
+        String query = "SELECT MAX(`Accession ID`) FROM book;";
+        try {
+            preStmt = con.prepareStatement(query);
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                latestAccessionId = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         String[] labelNamesString = {"Accession Id","Title","Author","Publisher","Edition","Course","Date","Quantity","Price"};
         String checkBoxMessage = "Change Accession Number";
         JLabel[] bookLabel = new JLabel[labelNamesString.length];
@@ -139,7 +151,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             if (i == 0 || i == 5 || i == 6)
                 bookTextField[i].addKeyListener(this);
         }
-        bookTextField[0].setText(latestAccessionId);
+        bookTextField[0].setText(String.valueOf(latestAccessionId));
         bookTextField[0].setEnabled(false);
         bookTextField[0].setDisabledTextColor(Color.BLACK);
         accessionIdCheckBox.setFocusable(false);
@@ -216,8 +228,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     }
 
     public void initializeBookObject() {
-        Book book = new Book();
-        book.setBookId(Integer.parseInt(bookTextField[0].getText()));
+        book = new Book();
+        book.setAccessionId(Integer.parseInt(bookTextField[0].getText()));
         book.setTitle(bookTextField[1].getText());
         book.setAuthor(bookTextField[2].getText());
         book.setPublisher(bookTextField[3].getText());
@@ -243,7 +255,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             bookCourseComboBox.setSelectedIndex(0);
         if (accessionIdCheckBox.isSelected())
             accessionIdCheckBox.setSelected(false);
-        bookTextField[0].setText(latestAccessionId);
+        bookTextField[0].setText(String.valueOf(latestAccessionId));
     }
 
     public char getGenderSelected() {
@@ -288,7 +300,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             validate = false;
         if (bookDateChooser.getDate() == null)
             validate = false;
-        if (accessionIdCheckBox.isSelected() && bookTextField[0].getText().equals(latestAccessionId))
+        if (accessionIdCheckBox.isSelected() && bookTextField[0].getText().equals(String.valueOf(latestAccessionId)))
             validate = false;
         System.out.println(validate ? "true" : "false");
         return validate;
@@ -299,7 +311,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         try {
             String query = "INSERT INTO student (`Student Name`, `Father Name`, Course, `Date Of Birth`, Gender, `Phone Number`, Address) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement preStmt = con.prepareStatement(query);
+            preStmt = con.prepareStatement(query);
 
             // Set the values for the placeholders in the statement
             preStmt.setString(1, std.getStudentName());
@@ -319,20 +331,22 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         return validate;
     }
 
-    /*public boolean generateBookObjectQuery() {
+    public boolean generateBookObjectQuery() {
         boolean validate = true;
         try {
-            String query = "INSERT INTO book (title, author, publisher, edition, course, quantity, price) "+
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO book (`Accession Id`, Title, Author, Publisher, Edition, Course, Date, Quantity, Price) "+
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             preStmt = con.prepareStatement(query);
 
-            preStmt.setString(1,book.getTitle());
-            preStmt.setString(2,book.getAuthor());
-            preStmt.setString(3,book.getPublisher());
-            preStmt.setString(4,book.getEdition());
-            preStmt.setInt(5,book.getCourse());
-            preStmt.setInt(6,book.getQuantity());
-            preStmt.setDouble(7,book.getPrice());
+            preStmt.setInt(1,book.getAccessionId());
+            preStmt.setString(2,book.getTitle());
+            preStmt.setString(3,book.getAuthor());
+            preStmt.setString(4,book.getPublisher());
+            preStmt.setString(5,book.getEdition());
+            preStmt.setInt(6,book.getCourse());
+            preStmt.setString(7,book.getDate());
+            preStmt.setInt(8,book.getQuantity());
+            preStmt.setDouble(9,book.getPrice());
 
             System.out.println(preStmt.executeUpdate() + " row(s) inserted.");
         } catch (SQLException e) {
@@ -340,7 +354,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             System.out.println(e.getMessage());
         }
         return validate;
-    }**/
+    }
     
     @Override
     public void actionPerformed(@NotNull ActionEvent e) {
@@ -360,10 +374,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         if (addBookButton == e.getSource()) {
             if (bookFormValidation()) {
                 initializeBookObject();
-                /*if (generateBookObjectQuery())
+                if (generateBookObjectQuery())
                     clearBookForm();
                 else
-                    System.out.println("Action Listener false");**/
+                    System.out.println("Action Listener false");
             }
             else
                 JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
@@ -421,7 +435,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             bookTextField[0].setEnabled(true);
         } else {
             bookTextField[0].setEnabled(false);
-            bookTextField[0].setText(latestAccessionId);
+            bookTextField[0].setText(String.valueOf(latestAccessionId));
         }
         //bookTextField[0].setEnabled(e.getStateChange() == ItemEvent.SELECTED);
     }
