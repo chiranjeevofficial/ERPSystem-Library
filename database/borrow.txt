@@ -1,10 +1,10 @@
 create table borrow (
     `Borrow Id` int primary key auto_increment,
     `Student Id` int not null,
-    `Book Id` int not null,
+    `Accession Id` int not null,
     `Borrow Date` varchar(20) not null,
     `Return Date` varchar(20) not null,
     `Fine Amount` decimal(10,2) not null,
     foreign key (`Student Id`) references student (`Student Id`),
-    foreign key (`Book Id`) references book (`Book Id`)
+    foreign key (`Accession Id`) references book (`Accession Id`)
 );

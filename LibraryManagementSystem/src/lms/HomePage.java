@@ -44,7 +44,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         con = util.getConnectionWithMySQL("library","root","admin@2023");
         JFrame mainFrame = new JFrame("Home Page");
         JTabbedPane mainTabbedPanel = new JTabbedPane();
-        mainTabbedPanel.setSize(700,500);
+        mainTabbedPanel.setSize(600,450);
         newStudentPanel = new JPanel(null);
         newBookPanel = new JPanel(null);
         issuedBookPanel = new JPanel(null);
@@ -107,16 +107,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     }
 
     void initializeNewBookFormPanel() {
-        String query = "SELECT MAX(`Accession ID`) FROM book;";
-        try {
-            preStmt = con.prepareStatement(query);
-            ResultSet resultSet = preStmt.executeQuery();
-            if (resultSet.next()) {
-                latestAccessionId = resultSet.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        setLatestAccessionID();
         String[] labelNamesString = {"Accession Id","Title","Author","Publisher","Edition","Course","Date","Quantity","Price"};
         String checkBoxMessage = "Change Accession Number";
         JLabel[] bookLabel = new JLabel[labelNamesString.length];
@@ -214,6 +205,20 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         
     }
 
+    public void setLatestAccessionID() {
+        String query = "SELECT MAX(`Accession ID`) FROM book;";
+        try {
+            preStmt = con.prepareStatement(query);
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                latestAccessionId = resultSet.getInt(1);
+            }
+            latestAccessionId+=1;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void initializeStudentObject() {
         std = new Student();
         std.setStudentId(0);
@@ -255,6 +260,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             bookCourseComboBox.setSelectedIndex(0);
         if (accessionIdCheckBox.isSelected())
             accessionIdCheckBox.setSelected(false);
+        setLatestAccessionID();
         bookTextField[0].setText(String.valueOf(latestAccessionId));
     }
 
@@ -292,7 +298,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             }
         }
         if (accessionIdCheckBox.isSelected()) {
-            if (bookTextField[0].getText().equals("") || bookTextField[0].getText().length() < 3) {
+            if (bookTextField[0].getText().equals("") || bookTextField[0].getText().length() < 1) {
                 validate = false;
             }
         }
@@ -374,8 +380,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         if (addBookButton == e.getSource()) {
             if (bookFormValidation()) {
                 initializeBookObject();
-                if (generateBookObjectQuery())
+                if (generateBookObjectQuery()) {
                     clearBookForm();
+                    setLatestAccessionID();
+                }
                 else
                     System.out.println("Action Listener false");
             }
