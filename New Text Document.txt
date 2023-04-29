@@ -45,3 +45,14 @@ System.out.println(dobDateChooserDateInString);
         table.setBounds(0,0,mainTabbedPanel.getWidth(),mainTabbedPanel.getHeight());
         newBookPanel.add(table);
     }**/
+
+
+SELECT s.`Student Name`, b.`Title` FROM student s
+INNER JOIN book b ON s.`Student Id` = 1
+AND b.`Accession Id` = 9;
+
+String message = "<html><b>Student Name: </b>"+studentInfo[0]+"\n"+
+                 "<b>Father Name: </b>"+studentInfo[1]+"\n"+
+                 "<b>Book Name:   </b>"+bookInfo[0]+"\n"+
+                 "<b>Book Author: </b>"+bookInfo[1]+
+                 "</html>";

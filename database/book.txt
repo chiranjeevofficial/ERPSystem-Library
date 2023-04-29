@@ -14,6 +14,6 @@ FOREIGN KEY (Course) REFERENCES course(`Course Id`)
 insert into book values (1,'Java','Aadi Yogi','DEV','1 edition',3,12,348.60);
 
 INSERT INTO book (`Accession Id`, Title, Author, Publisher, Edition, Course, Date, Quantity, Price) VALUES 
-(1201, 'Java', 'Mahadev', 'DEV', 'First', 3, '2023-04-28', 50, 670.99),
-(1213, 'Python', 'Narayan', 'DEV', 'First', 3, '2023-04-29' , 40, 499.99),
-(1290, 'Kotlin', 'Vishu', 'DEV', 'First', 5, '2023-04-30', 10, 399.80);
+(1, 'Java', 'Mahadev', 'DEV', 'First', 3, '2023-04-28', 50, 670.99),
+(2, 'Python', 'Narayan', 'DEV', 'First', 3, '2023-04-29' , 40, 499.99),
+(3, 'Kotlin', 'Vishu', 'DEV', 'First', 5, '2023-04-30', 10, 399.80);

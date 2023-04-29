@@ -10,7 +10,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class HomePage implements ActionListener, KeyListener, ItemListener {
+public class HomePage implements ActionListener, KeyListener, ItemListener, FocusListener {
     private final Connection con;
     private PreparedStatement preStmt;
     String[] course = {
@@ -36,7 +36,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     private final JButton clearStudentButton = new JButton("Clear");
     private final JButton addBookButton = new JButton("Submit");
     private final JButton clearBookButton = new JButton("Clear");
-    private JTextField[] bookTextField;
+    private JButton[] issuedBookButton;
+    private JTextField[] bookTextField, issuedBookTextField;
     JCheckBox accessionIdCheckBox;
     int latestAccessionId;
 
@@ -51,11 +52,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         mainTabbedPanel.add("Add Student", newStudentPanel);
         mainTabbedPanel.add("Add Book", newBookPanel);
         mainTabbedPanel.add("Issue Book",issuedBookPanel);
-        mainTabbedPanel.setSelectedIndex(1);
+        mainTabbedPanel.setSelectedIndex(2);
         initializeNewStudentFormPanel();
         initializeNewBookFormPanel();
         initializeIssuedBookFormPanel();
-        initializeAllotBookFormPanel();
         BrahmasmiLiabrary.util.setMainFrame(mainFrame, mainTabbedPanel.getWidth(), mainTabbedPanel.getHeight());
         mainFrame.add(mainTabbedPanel);
     }
@@ -159,50 +159,28 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
     }
 
     public void initializeIssuedBookFormPanel() {
-        JTextField[] issuedBookTextField = new JTextField[4];
-        String[] labelString = {"Student Id", "Student Name", "Book Id", "Book Name", "Issue Date"};
-        String[] buttonLabel = {"Submit","Clear"};
+        String[] labelString = {"Student Id", "Accession Id"};
+        String[] buttonLabel = {"Go", "Clear"};
         JLabel[] issuedBookLabel = new JLabel[labelString.length];
-        JDateChooser issuedBookDateChooser = new JDateChooser();
-        JButton[] issuedBookButton = new JButton[2];
-        String confirmationString = "I agree, all above details are correct.";
-        JCheckBox confirmationCheckBox = new JCheckBox(confirmationString);
-        int yAxisGap = 10, xAxisGapButton = 120;
+        issuedBookTextField = new JTextField[issuedBookLabel.length];
+        issuedBookButton = new JButton[buttonLabel.length];
+        int xAxisGap = 10, xAxisGapButton = 410;
         for(int i = 0 ; i < labelString.length ; i++) {
             issuedBookLabel[i] = new JLabel(labelString[i]);
-            issuedBookLabel[i].setBounds(10,yAxisGap,100,30);
+            issuedBookLabel[i].setBounds(xAxisGap,10,80,30);
             issuedBookPanel.add(issuedBookLabel[i]);
-            if (i < issuedBookTextField.length) {
-                issuedBookTextField[i] = new JTextField(20);
-                issuedBookTextField[i].setBounds(120,yAxisGap,200,30);
-                issuedBookPanel.add(issuedBookTextField[i]);
-            }
-            /*if (i < issuedBookDateChooser.length) {
-                issuedBookDateChooser[i] = new JDateChooser();
-                issuedBookDateChooser[i].setBounds(120,yAxisGapDC,200,30);
-                issuedBookPanel.add(issuedBookDateChooser[i]);
-                yAxisGapDC += 30;
-            }**/
-            if (i < issuedBookButton.length) {
-                issuedBookButton[i] = new JButton(buttonLabel[i]);
-                issuedBookButton[i].setBounds(xAxisGapButton,135,95,30);
-                issuedBookPanel.add(issuedBookButton[i]);
-                xAxisGapButton += 105;
-            }
-            yAxisGap += 30;
-        }
-        issuedBookDateChooser.setBounds(120,issuedBookTextField[issuedBookTextField.length-1].getY()+30,200,30);
-        issuedBookTextField[1].setText("Namaste");
-        issuedBookTextField[3].setText("Java");
-        issuedBookTextField[1].setEditable(false);
-        issuedBookTextField[3].setEditable(false);
-        confirmationCheckBox.setBounds(5,165,300,30);
-        issuedBookPanel.add(confirmationCheckBox);
-        
-    }
+            
+            issuedBookTextField[i] = new JTextField(20);
+            issuedBookTextField[i].setBounds(xAxisGap+80,10,100,30);
+            issuedBookPanel.add(issuedBookTextField[i]);
 
-    public void initializeAllotBookFormPanel() {
-        
+            issuedBookButton[i] = new JButton(buttonLabel[i]);
+            issuedBookButton[i].setBounds(xAxisGapButton,10,issuedBookButton[i].getPreferredSize().width,30);
+            issuedBookButton[i].addActionListener(this);
+            issuedBookPanel.add(issuedBookButton[i]);
+            xAxisGap += 200;
+            xAxisGapButton += 70;
+        }
     }
 
     public void setLatestAccessionID() {
@@ -264,6 +242,11 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         bookTextField[0].setText(String.valueOf(latestAccessionId));
     }
 
+    public void clearIssuedBookForm() {
+        for (JTextField textField : issuedBookTextField)
+            textField.setText("");
+    }
+
     public char getGenderSelected() {
         return male.isSelected()?'M':'F';
     }
@@ -309,6 +292,18 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         if (accessionIdCheckBox.isSelected() && bookTextField[0].getText().equals(String.valueOf(latestAccessionId)))
             validate = false;
         System.out.println(validate ? "true" : "false");
+        return validate;
+    }
+
+    public boolean issuedBookFormValidation() {
+        boolean validate = true;
+        for (JTextField jTextField : issuedBookTextField) {
+            if (jTextField.getText().equals("")) {
+                validate = false;
+                break;
+            }
+        }
+        System.out.println(validate?"true":"false");
         return validate;
     }
 
@@ -361,7 +356,48 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         }
         return validate;
     }
-    
+
+    public String[] findStudentNameAndFatherNameThroughStudentId() {
+        String query = "SELECT `Student Name`, `Father Name` FROM student WHERE `Student Id` = ?";
+        String[] names = new String[2];
+        try {
+            preStmt = con.prepareStatement(query);
+            preStmt.setInt(1, Integer.parseInt(issuedBookTextField[0].getText()));
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                names[0] = resultSet.getString("Student Name");
+                names[1] = resultSet.getString("Father Name");
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Invalid student ID");
+                names[0] = "";
+                names[1] = "";
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        return names;
+    }
+
+    public String[] findBookNameAndAuthorNameThroughAccessionId() {
+        String query = "SELECT `Title`, `Author` FROM book WHERE `Accession Id` = ?";
+        String[] names = new String[2];
+        try {
+            preStmt = con.prepareStatement(query);
+            preStmt.setInt(1, Integer.parseInt(issuedBookTextField[1].getText()));
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                names[0] = resultSet.getString("Title");
+                names[1] = resultSet.getString("Author");
+            }
+            else
+                JOptionPane.showMessageDialog(null, "Invalid Accession ID");
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        return names;
+    }
+
     @Override
     public void actionPerformed(@NotNull ActionEvent e) {
         if (addStudentButton == e.getSource()) {
@@ -393,6 +429,21 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
         if (clearBookButton == e.getSource()) {
             clearBookForm();
         }
+        if (e.getSource() == issuedBookButton[0]) {
+            if (issuedBookFormValidation()) {
+                String[] studentInfo = findStudentNameAndFatherNameThroughStudentId();
+                String[] bookInfo = findBookNameAndAuthorNameThroughAccessionId();
+                String message = "Student Name: "+studentInfo[0]+"\n"+
+                        "Father Name: "+studentInfo[1]+"\n"+
+                        "Book Name: "+bookInfo[0]+"\n"+
+                        "Book Author: "+bookInfo[1];
+                JOptionPane.showMessageDialog(null, message, "Book Allotment Information", JOptionPane.INFORMATION_MESSAGE);
+                clearIssuedBookForm();
+            } else
+                JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
+        }
+        if (e.getSource() == issuedBookButton[1])
+            clearIssuedBookForm();
     }
 
     @Override
@@ -426,6 +477,11 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
                 }
             }
         }
+        if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[2]) {
+            char ch = e.getKeyChar();
+            if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
+                e.consume();
+        }
     }
 
     @Override
@@ -446,5 +502,27 @@ public class HomePage implements ActionListener, KeyListener, ItemListener {
             bookTextField[0].setText(String.valueOf(latestAccessionId));
         }
         //bookTextField[0].setEnabled(e.getStateChange() == ItemEvent.SELECTED);
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        if (e.getSource() == issuedBookTextField[0]) {
+            issuedBookTextField[1].setText("Finding...");
+        }
+        if (e.getSource() == issuedBookTextField[2]) {
+            issuedBookTextField[3].setText("Finding...");
+        }
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        if (e.getSource() == issuedBookTextField[0]) {
+            if (issuedBookTextField[0].getText().equals(""))
+                issuedBookTextField[1].setText("Enter Student Id");
+        }
+        if (e.getSource() == issuedBookTextField[2]) {
+            if (issuedBookTextField[2].getText().equals(""))
+                issuedBookTextField[3].setText("Enter Accession Id");
+        }
     }
 }

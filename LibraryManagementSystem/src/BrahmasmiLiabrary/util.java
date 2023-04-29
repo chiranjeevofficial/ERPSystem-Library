@@ -54,7 +54,14 @@ public class util {
             textFieldFont = new Font("MS Reference Sans Serif",Font.PLAIN,20);
 
     public static final Border underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1);
+            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1),
+            emptyBorder = BorderFactory.createEmptyBorder(10, 20, 10, 20),
+            allSideRoundedBorder = BorderFactory.createCompoundBorder(allSideBorder,emptyBorder);
+
+    public static Border getRoundedBorder(Color color, int radius) {
+        return BorderFactory.createLineBorder(color, radius, true);
+    }
+
 
     public static final Color blueColor = new Color(0, 55, 255),
             purpleColor = new Color(183,0,255),
@@ -136,6 +143,7 @@ public class util {
         label.setVerticalAlignment(JLabel.CENTER);
         label.setSize(width,height);
     }
+
 
 
 
