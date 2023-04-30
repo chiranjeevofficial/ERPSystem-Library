@@ -11,17 +11,7 @@ public class Student {
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
-
-    public Student(int studentId, String studentName, String fatherName, int course, String gender, String phoneNumber, String address) {
-        this.studentName = studentName;
-        this.fatherName = fatherName;
-        this.course = course;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.gender = gender;
-        this.studentId = Integer.parseInt(String.valueOf(studentId));
-    }
-
+    
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
