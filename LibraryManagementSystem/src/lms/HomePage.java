@@ -52,7 +52,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         mainTabbedPanel.add("Add Student", newStudentPanel);
         mainTabbedPanel.add("Add Book", newBookPanel);
         mainTabbedPanel.add("Issue Book",issuedBookPanel);
-        mainTabbedPanel.setSelectedIndex(2);
+        mainTabbedPanel.setSelectedIndex(0);
         initializeNewStudentFormPanel();
         initializeNewBookFormPanel();
         initializeIssuedBookFormPanel();
@@ -91,6 +91,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 textFieldYAxisGap += 30;
             }
         }
+        studentInfoTextField[0].addFocusListener(this);
+        studentInfoTextField[0].addKeyListener(this);
+        studentInfoTextField[1].addFocusListener(this);
+        studentInfoTextField[1].addKeyListener(this);
         studentInfoTextField[studentInfoTextField.length-2].addKeyListener(this);
         studentDateChooser.setBounds(120,studentInfoTextField[1].getY()+60,200,27);
         addStudentButton.setBounds(studentInfoTextField[studentInfoTextField.length-1].getX(),studentInfoTextField[studentInfoTextField.length-1].getY()+35,90,30);
@@ -398,6 +402,20 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return names;
     }
 
+    public void toStringValidate(@NotNull JTextField textField) {
+        textField.setText(textField.getText().trim());
+        String str = textField.getText();
+        String[] words = str.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i].toLowerCase();
+            String capitalizedWord = Character.toUpperCase(word.charAt(0)) + word.substring(1);
+            words[i] = capitalizedWord;
+        }
+        str = String.join(" ", words);
+        textField.setText(str);
+        System.out.println(str);
+    }
+
     @Override
     public void actionPerformed(@NotNull ActionEvent e) {
         if (addStudentButton == e.getSource()) {
@@ -447,12 +465,17 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(@NotNull KeyEvent e) {
         if (e.getSource() == studentInfoTextField[studentInfoTextField.length-2]) { //textField validation for phone number
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
             if (studentInfoTextField[studentInfoTextField.length-2].getText().length() >= 10)
+                e.consume();
+        }
+        if (e.getSource() == studentInfoTextField[0] || e.getSource() == studentInfoTextField[1]) {
+            char ch = e.getKeyChar();
+            if (!(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_SPACE))
                 e.consume();
         }
         if (e.getSource() == bookTextField[0]) {
@@ -477,7 +500,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 }
             }
         }
-        if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[2]) {
+        if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1]) {
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
@@ -494,7 +517,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e) {
+    public void itemStateChanged(@NotNull ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             bookTextField[0].setEnabled(true);
         } else {
@@ -506,23 +529,16 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
 
     @Override
     public void focusGained(FocusEvent e) {
-        if (e.getSource() == issuedBookTextField[0]) {
-            issuedBookTextField[1].setText("Finding...");
-        }
-        if (e.getSource() == issuedBookTextField[2]) {
-            issuedBookTextField[3].setText("Finding...");
-        }
+        
     }
 
     @Override
-    public void focusLost(FocusEvent e) {
-        if (e.getSource() == issuedBookTextField[0]) {
-            if (issuedBookTextField[0].getText().equals(""))
-                issuedBookTextField[1].setText("Enter Student Id");
+    public void focusLost(@NotNull FocusEvent e) {
+        if (e.getSource() == studentInfoTextField[0]) {
+            toStringValidate(studentInfoTextField[0]);
         }
-        if (e.getSource() == issuedBookTextField[2]) {
-            if (issuedBookTextField[2].getText().equals(""))
-                issuedBookTextField[3].setText("Enter Accession Id");
+        if (e.getSource() == studentInfoTextField[1]) {
+            toStringValidate(studentInfoTextField[1]);
         }
     }
 }
