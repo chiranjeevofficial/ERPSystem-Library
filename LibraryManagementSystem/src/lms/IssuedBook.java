@@ -1,9 +1,8 @@
 package lms;
 
 public class IssuedBook {
-    private int issuedId, studentId, bookId;
-    private String issuedDate, dueDate, returnDate;
-    private double fineAmount;
+    private int issuedId, studentId, accessionId;
+    private String issuedDate;
     public int getIssuedId() {
         return issuedId;
     }
@@ -20,12 +19,12 @@ public class IssuedBook {
         this.studentId = studentId;
     }
 
-    public int getBookId() {
-        return bookId;
+    public int getAccessionId() {
+        return accessionId;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public void setAccessionId(int accessionId) {
+        this.accessionId = accessionId;
     }
 
     public String getIssuedDate() {
@@ -36,38 +35,11 @@ public class IssuedBook {
         this.issuedDate = issuedDate;
     }
 
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public String getReturnDate() {
-        return returnDate;
-    }
-
-    public void setReturnDate(String returnDate) {
-        this.returnDate = returnDate;
-    }
-
-    public double getFineAmount() {
-        return fineAmount;
-    }
-
-    public void setFineAmount(double fineAmount) {
-        this.fineAmount = fineAmount;
-    }
-
     @Override
     public String toString() {
         return getIssuedId()+" "+
                 getStudentId()+" "+
-                getBookId()+" "+
-                getIssuedDate()+" "+
-                getDueDate()+" "+
-                getReturnDate()+" "+
-                getFineAmount();
+                getAccessionId()+" "+
+                getIssuedDate();
     }
 }

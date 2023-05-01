@@ -6,7 +6,6 @@ create table book (
 `Edition` varchar(50) not null,
 `Course` int not null,
 `Date` varchar(20) not null,
-`Quantity` int not null,
 `Price` decimal(10,2) not null,
 FOREIGN KEY (Course) REFERENCES course(`Course Id`)
 );

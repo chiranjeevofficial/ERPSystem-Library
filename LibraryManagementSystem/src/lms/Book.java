@@ -86,7 +86,6 @@ public class Book {
                 getEdition()+" "+
                 getCourse()+" "+
                 getDate()+" "+
-                getQuantity()+" "+
                 getPrice();
     }
 }

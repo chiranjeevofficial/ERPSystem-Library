@@ -56,3 +56,9 @@ String message = "<html><b>Student Name: </b>"+studentInfo[0]+"\n"+
                  "<b>Book Name:   </b>"+bookInfo[0]+"\n"+
                  "<b>Book Author: </b>"+bookInfo[1]+
                  "</html>";
+
+
+SELECT * INTO OUTFILE 'D:\mysql.txt'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+FROM student;
