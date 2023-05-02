@@ -5,6 +5,19 @@ public class Book {
     private int accessionId, course, quantity;
     private double price;
     private boolean availability;
+    private static Book ref;
+    
+    private Book() {
+        
+    }
+
+    public static Book getInstance() {
+        if(ref == null) {
+            ref = new Book();
+            return ref;
+        }
+        return null;
+    }
 
     public boolean getAvailability() {
         return availability;

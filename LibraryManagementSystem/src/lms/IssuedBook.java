@@ -3,6 +3,18 @@ package lms;
 public class IssuedBook {
     private int issuedId, studentId, accessionId;
     private String issuedDate;
+    private static IssuedBook ref;
+    private IssuedBook() {
+
+    }
+    public static IssuedBook getInstance() {
+        if(ref == null) {
+            ref = new IssuedBook();
+            return ref;
+        }
+        return null;
+    }
+
     public int getIssuedId() {
         return issuedId;
     }

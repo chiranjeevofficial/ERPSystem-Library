@@ -26,8 +26,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             "Bachelor of Commerce"
     };
     private final Student student = Student.getInstance();
-    private Book book = new Book();
-    private final IssuedBook issuedBook = new IssuedBook();
+    private final Book book = Book.getInstance();
+    private final IssuedBook issuedBook = IssuedBook.getInstance();
     private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel;
     private final JTabbedPane mainTabbedPane;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
@@ -235,6 +235,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     columnName[i] = resultSetMetaData.getColumnName(i + 1);
                 defaultTableModel.setColumnIdentifiers(columnName);
                 while (resultSet.next()) {
+                    assert book != null;
                     book.setAccessionId(resultSet.getInt(1));
                     book.setTitle(resultSet.getString(2));
                     book.setAuthor(resultSet.getString(3));
@@ -377,7 +378,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     public void initializeBookObject() {
-        book = new Book();
+        assert book != null;
         book.setAccessionId(Integer.parseInt(bookTextField[0].getText()));
         book.setTitle(bookTextField[1].getText());
         book.setAuthor(bookTextField[2].getText());
@@ -510,6 +511,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     public boolean generateBookObjectQuery() {
+        assert book != null;
         book.setAccessionId(Integer.parseInt(bookTextField[0].getText()));
         boolean validate = true;
         try {
@@ -558,6 +560,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             preStmt.setInt(1,accessionId);
             ResultSet resultSet = preStmt.executeQuery();
             if(resultSet.next()) {
+                assert book != null;
                 book.setAvailability(resultSet.getBoolean("Availability"));
                 validate = book.getAvailability();
                 if(!validate)
@@ -576,12 +579,14 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             String query = "INSERT INTO issued (`Issued Id`, `Student Id`, `Accession Id`, `Issued Date`) " +
                     "VALUES (?, ?, ?, ?)";
             preStmt = con.prepareStatement(query);
+            assert issuedBook != null;
             preStmt.setInt(1, issuedBook.getIssuedId());
             preStmt.setInt(2, issuedBook.getStudentId());
             preStmt.setInt(3, issuedBook.getAccessionId());
             preStmt.setString(4, issuedBook.getIssuedDate());
             System.out.println(issuedBook);
             System.out.println(preStmt.executeUpdate() + " row(s) inserted.");
+            assert book != null;
             validate = setBookAvailabilityQuery(false, book.getAccessionId());
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -621,6 +626,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             preStmt.setInt(1, Integer.parseInt(issuedBookTextField[1].getText()));
             ResultSet resultSet = preStmt.executeQuery();
             if (resultSet.next()) {
+                assert book != null;
                 book.setAccessionId(Integer.parseInt(issuedBookTextField[1].getText()));
                 book.setTitle(resultSet.getString("Title"));
                 book.setAuthor(resultSet.getString("Author"));
@@ -687,9 +693,11 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     yAxis += 30;
                 }
             }
+            assert issuedBook != null;
             issuedBook.setIssuedId(getLatestIssuedId());
             assert student != null;
             issuedBook.setStudentId(student.getStudentId());
+            assert book != null;
             issuedBook.setAccessionId(book.getAccessionId());
             issuedBook.setIssuedDate(new SimpleDateFormat("yyyy-MM-dd").format(issuedBookInnerDateChooser.getDate()));
 
@@ -748,7 +756,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (addBookButton == e.getSource()) {
             if (bookFormValidation()) {
                 initializeBookObject();
-                for (int i = book.getQuantity() ; i != 0 ; i--)
+                assert book != null;
+                for (int i = book.getQuantity(); i != 0 ; i--)
                     System.out.println(generateBookObjectQuery()?clearBookForm():"false");
             }
             else
@@ -777,6 +786,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     JOptionPane.QUESTION_MESSAGE);
             if(result==0) {
                 System.out.println(generateIssuedBookObjectQuery() ? clearIssuedBookInnerForm() : "false");
+                assert issuedBook != null;
                 JOptionPane.showMessageDialog(null,"Issue Id: "+issuedBook.getIssuedId(),"Book Successfully Issued",JOptionPane.WARNING_MESSAGE);
             }
         }

@@ -3,16 +3,16 @@ package lms;
 public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, course;
-    private static Student referenceVariable;
+    private static Student ref;
 
     private Student() {
 
     }
 
     public static Student getInstance() {
-        if (referenceVariable == null) {
-            referenceVariable = new Student();
-            return referenceVariable;
+        if (ref == null) {
+            ref = new Student();
+            return ref;
         }
         return null;
     }
