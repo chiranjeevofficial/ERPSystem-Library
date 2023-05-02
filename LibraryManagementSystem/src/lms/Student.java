@@ -3,6 +3,19 @@ package lms;
 public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, course;
+    private static Student referenceVariable;
+
+    private Student() {
+
+    }
+
+    public static Student getInstance() {
+        if (referenceVariable == null) {
+            referenceVariable = new Student();
+            return referenceVariable;
+        }
+        return null;
+    }
 
     public String getDateOfBirth() {
         return dateOfBirth;
@@ -39,8 +52,6 @@ public class Student {
     public void setGender(char gender) {
         this.gender = String.valueOf(gender);
     }
-
-    public Student() {}
 
     public String getStudentName() {
         return studentName;

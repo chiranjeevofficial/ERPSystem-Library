@@ -47,8 +47,20 @@ public class util {
     frame.setVisible(true);
     frame.setLocationRelativeTo(null); // open application to center on the screen
     frame.setResizable(true);
+    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
+    public static Dimension getScreenDimension() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] screens = ge.getScreenDevices();
+        Insets insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(screens[0].getDefaultConfiguration());
+        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        return new Dimension(screenSize.width - insets.left - insets.right, screenSize.height - insets.top - insets.bottom);
+    }
+
+
+
     public static final Font titleFont = new Font("Century Gothic", Font.BOLD,25),
             labelHeaderFont = new Font("Century Gothic",Font.BOLD,40),
             textFieldFont = new Font("MS Reference Sans Serif",Font.PLAIN,20);

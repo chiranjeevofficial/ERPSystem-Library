@@ -7,6 +7,7 @@ create table book (
 `Course` int not null,
 `Date` varchar(20) not null,
 `Price` decimal(10,2) not null,
+`Availability` boolean not null,
 FOREIGN KEY (Course) REFERENCES course(`Course Id`)
 );
 

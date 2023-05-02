@@ -4,6 +4,15 @@ public class Book {
     private String title, author, publisher, edition, date;
     private int accessionId, course, quantity;
     private double price;
+    private boolean availability;
+
+    public boolean getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(boolean availability) {
+        this.availability = availability;
+    }
 
     public String getDate() {
         return date;
@@ -86,6 +95,7 @@ public class Book {
                 getEdition()+" "+
                 getCourse()+" "+
                 getDate()+" "+
-                getPrice();
+                getPrice()+" "+
+                getAvailability();
     }
 }
