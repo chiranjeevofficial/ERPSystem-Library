@@ -4,7 +4,7 @@ CREATE TABLE student (
 `Father Name` VARCHAR(100) NOT NULL,
 `Course` INT NOT NULL,
 `Date Of Birth` varchar(20) NOT NULL,
-`Gender` CHAR(1) NOT NULL,
+`Gender` varchar(10) NOT NULL,
 `Phone Number` VARCHAR(20),
 `Address` VARCHAR(255) NOT NULL,
 FOREIGN KEY (`Course`) REFERENCES `course`(`Course Id`)

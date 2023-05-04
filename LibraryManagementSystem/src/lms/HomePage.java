@@ -30,13 +30,13 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     private final Book book = Book.getInstance();
     private final Borrow borrow = Borrow.getInstance();
     private final IssuedBook issuedBook = IssuedBook.getInstance();
-    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel, returnBookPanel;
+    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel, returnBookPanel, showStudentPanel;
     private final JTabbedPane mainTabbedPane;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private JLabel[] returnBookLabels;
     private JTextField[] studentInfoTextField;
     private JComboBox<String> bookCourseComboBox;
-    private JComboBox<String> courseComboBox;
+    private JComboBox<String> studentCourseComboBox;
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
     private JDateChooser studentDateChooser, bookDateChooser, returnDateChooser, returnBookIssueDateChooser;
@@ -60,27 +60,30 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         issuedBookPanel = new JPanel(null);
         showBookPanel = new JPanel(null);
         returnBookPanel = new JPanel(null);
+        showStudentPanel = new JPanel(null);
         mainTabbedPane.add("Add Student", newStudentPanel);
         mainTabbedPane.add("Add Book", newBookPanel);
         mainTabbedPane.add("Issue Book",issuedBookPanel);
         mainTabbedPane.add("Return Book",returnBookPanel);
         mainTabbedPane.add("Show Book",showBookPanel);
-        mainTabbedPane.setSelectedIndex(3);
+        mainTabbedPane.add("Show Student",showStudentPanel);
+        mainTabbedPane.setSelectedIndex(5);
         mainTabbedPane.addChangeListener(this);
         initializeNewStudentFormPanel();
         initializeNewBookFormPanel();
         initializeIssuedBookFormPanel();
         initializeShowBookTablePanel();
         initializeReturnBookFormPanel();
+        initializeShowStudentTablePanel();
         mainFrame.add(mainTabbedPane);
         mainTabbedPane.revalidate();
         mainTabbedPane.repaint();
     }
 
     void initializeNewStudentFormPanel() {
-        courseComboBox = new JComboBox<>(course);
-        courseComboBox.setSelectedIndex(0);
-        courseComboBox.setBounds(120,71,200,27);
+        studentCourseComboBox = new JComboBox<>(course);
+        studentCourseComboBox.setSelectedIndex(0);
+        studentCourseComboBox.setBounds(120,71,200,27);
         genderButtonGroup = new ButtonGroup();
         male = new JRadioButton("Male");
         female = new JRadioButton("Female");
@@ -121,7 +124,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         studentDateChooser.getDateEditor().setEnabled(false);
         addStudentButton.addActionListener(this);
         clearStudentButton.addActionListener(this);
-        newStudentPanel.add(courseComboBox);
+        newStudentPanel.add(studentCourseComboBox);
         newStudentPanel.add(addStudentButton);
         newStudentPanel.add(clearStudentButton);
         newStudentPanel.add(studentDateChooser);
@@ -394,7 +397,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                             book.getAuthor(),
                             book.getPublisher(),
                             book.getEdition(),
-                            courseComboBox.getItemAt(book.getCourse()),
+                            studentCourseComboBox.getItemAt(book.getCourse()),
                             book.getDate(),
                             book.getPrice(),
                             book.getAvailability()
@@ -460,6 +463,72 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         showBookPanel.revalidate();
         showBookPanel.repaint();
     }**/
+
+    public void initializeShowStudentTablePanel() {
+        showStudentPanel.removeAll();
+        JTable jTable = new JTable();
+        JScrollPane jScrollPane = new JScrollPane(jTable);
+        ResultSet resultSet;
+        boolean isEmpty = true;
+        try {
+            String query = "SELECT COUNT(*) AS count FROM student";
+            preStmt = con.prepareStatement(query);
+            resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                if (count == 0) {
+                    isEmpty = false;
+                }
+            }
+            if (isEmpty){
+                preStmt = con.prepareStatement("select * from student;");
+                resultSet = preStmt.executeQuery();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                DefaultTableModel defaultTableModel = (DefaultTableModel) jTable.getModel();
+                int columnCount = resultSetMetaData.getColumnCount();
+                String[] columnName = new String[columnCount];
+                for (int i = 0; i < columnCount; i++)
+                    columnName[i] = resultSetMetaData.getColumnName(i + 1);
+                defaultTableModel.setColumnIdentifiers(columnName);
+                while (resultSet.next()) {
+                    assert student != null;
+                    student.setStudentId(resultSet.getInt(1));
+                    student.setStudentName(resultSet.getString(2));
+                    student.setFatherName(resultSet.getString(3));
+                    student.setCourse(resultSet.getInt(4));
+                    student.setDateOfBirth(resultSet.getString(5));
+                    student.setGender(resultSet.getString(6));
+                    student.setPhoneNumber(resultSet.getString(7));
+                    student.setAddress(resultSet.getString(8));
+                    Object[] row = {
+                            student.getStudentId(),
+                            student.getStudentName(),
+                            student.getFatherName(),
+                            studentCourseComboBox.getItemAt(student.getCourse()),
+                            student.getDateOfBirth(),
+                            student.getGender(),
+                            student.getPhoneNumber(),
+                            student.getAddress()
+                    };
+                    defaultTableModel.addRow(row);
+                }
+                jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); //it does not work
+                jTable.setEnabled(false);
+                jScrollPane.setBounds(0, 0, mainTabbedPane.getWidth(), mainTabbedPane.getHeight());
+            } else {
+                JLabel message = new JLabel("Table is Empty");
+                message.setBounds(10,5,100,30);
+                message.setForeground(Color.RED);
+                showStudentPanel.add(message);
+                //JOptionPane.showMessageDialog(null,"Table is Empty","Error",JOptionPane.WARNING_MESSAGE);
+            }
+            showStudentPanel.revalidate();
+            showStudentPanel.repaint();
+            showStudentPanel.add(jScrollPane);
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
+    }
 
     public void setLatestAccessionID() {
         String query = "SELECT MAX(`Accession ID`) FROM book;";
@@ -528,7 +597,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         student.setStudentId(getLatestStudentID());
         student.setStudentName(studentInfoTextField[0].getText());
         student.setFatherName(studentInfoTextField[1].getText());
-        student.setCourse(courseComboBox.getSelectedIndex());
+        student.setCourse(studentCourseComboBox.getSelectedIndex());
         student.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(studentDateChooser.getDate()));
         student.setGender(getGenderSelected());
         student.setPhoneNumber(studentInfoTextField[2].getText());
@@ -565,7 +634,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     public void clearStudentForm() {
         for (JTextField jTextField : studentInfoTextField) jTextField.setText("");
         genderButtonGroup.clearSelection();
-        courseComboBox.setSelectedIndex(0);
+        studentCourseComboBox.setSelectedIndex(0);
         studentDateChooser.setDate(null);
     }
 
@@ -586,8 +655,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             textField.setText("");
     }
 
-    public char getGenderSelected() {
-        return male.isSelected()?'M':'F';
+    public String getGenderSelected() {
+        return male.isSelected()?"Male":"Female";
     }
 
     public boolean studentFormValidation() {
@@ -599,7 +668,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             }
         }
         validate = validate && (male.isSelected() || female.isSelected());
-        if (courseComboBox.getSelectedIndex() == 0)
+        if (studentCourseComboBox.getSelectedIndex() == 0)
             validate = false;
         if (studentDateChooser.getDate() == null)
             validate = false;
@@ -978,6 +1047,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     clearStudentForm();
                     assert student != null;
                     JOptionPane.showMessageDialog(null,"Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
+                    initializeShowStudentTablePanel();
                 }
                 else
                     JOptionPane.showMessageDialog(null,"Some Error Occurred");
@@ -1115,12 +1185,6 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 }
             }
         }
-        /*if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1]) {
-            char ch = e.getKeyChar();
-            if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
-                e.consume();
-        }**/
-        
     }
 
     @Override
@@ -1140,7 +1204,6 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             bookTextField[0].setEnabled(false);
             bookTextField[0].setText(String.valueOf(getLatestAccessionId));
         }
-        //bookTextField[0].setEnabled(e.getStateChange() == ItemEvent.SELECTED);
     }
 
     @Override
@@ -1186,6 +1249,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (e.getSource() == mainTabbedPane) {
             if (mainTabbedPane.getSelectedIndex() == 3)
                 initializeShowBookTablePanel();
+            if (mainTabbedPane.getSelectedIndex() == 5)
+                initializeShowStudentTablePanel();
         }
     }
 }

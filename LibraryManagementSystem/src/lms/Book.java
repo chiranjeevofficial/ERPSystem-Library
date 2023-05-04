@@ -6,9 +6,9 @@ public class Book {
     private double price;
     private boolean availability;
     private static Book ref;
-    
+
     private Book() {
-        
+
     }
 
     public static Book getInstance() {

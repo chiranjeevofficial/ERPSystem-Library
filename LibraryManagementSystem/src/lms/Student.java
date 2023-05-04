@@ -24,7 +24,7 @@ public class Student {
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
-    
+
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
@@ -49,8 +49,8 @@ public class Student {
         this.studentId = studentId;
     }
 
-    public void setGender(char gender) {
-        this.gender = String.valueOf(gender);
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getStudentName() {
