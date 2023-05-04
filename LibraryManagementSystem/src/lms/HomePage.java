@@ -30,7 +30,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     private final Book book = Book.getInstance();
     private final Borrow borrow = Borrow.getInstance();
     private final IssuedBook issuedBook = IssuedBook.getInstance();
-    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel, returnBookPanel, showStudentPanel;
+    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel, returnBookPanel, showStudentPanel, showIssuedBookPanel, showLibraryHistoryPanel;
     private final JTabbedPane mainTabbedPane;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
     private JLabel[] returnBookLabels;
@@ -61,12 +61,16 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         showBookPanel = new JPanel(null);
         returnBookPanel = new JPanel(null);
         showStudentPanel = new JPanel(null);
+        showIssuedBookPanel = new JPanel(null);
+        showLibraryHistoryPanel = new JPanel(null);
         mainTabbedPane.add("Add Student", newStudentPanel);
         mainTabbedPane.add("Add Book", newBookPanel);
         mainTabbedPane.add("Issue Book",issuedBookPanel);
         mainTabbedPane.add("Return Book",returnBookPanel);
         mainTabbedPane.add("Show Book",showBookPanel);
         mainTabbedPane.add("Show Student",showStudentPanel);
+        mainTabbedPane.add("Show Issued Book",showIssuedBookPanel);
+        mainTabbedPane.add("Library History",showLibraryHistoryPanel);
         mainTabbedPane.setSelectedIndex(5);
         mainTabbedPane.addChangeListener(this);
         initializeNewStudentFormPanel();
@@ -75,6 +79,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         initializeShowBookTablePanel();
         initializeReturnBookFormPanel();
         initializeShowStudentTablePanel();
+        initializeShowIssuedBookTablePanel();
+        initializeShowLibraryHistoryTablePanel();
         mainFrame.add(mainTabbedPane);
         mainTabbedPane.revalidate();
         mainTabbedPane.repaint();
@@ -525,6 +531,146 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             showStudentPanel.revalidate();
             showStudentPanel.repaint();
             showStudentPanel.add(jScrollPane);
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
+    }
+
+    public void initializeShowIssuedBookTablePanel() {
+        showIssuedBookPanel.removeAll();
+        JTable jTable = new JTable();
+        JScrollPane jScrollPane = new JScrollPane(jTable);
+        ResultSet resultSet;
+        boolean isEmpty = true;
+        try {
+            String query = "SELECT COUNT(*) AS count FROM issued";
+            preStmt = con.prepareStatement(query);
+            resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                if (count == 0) {
+                    isEmpty = false;
+                }
+            }
+            if (isEmpty){
+                preStmt = con.prepareStatement("select * from issued;");
+                resultSet = preStmt.executeQuery();
+                DefaultTableModel defaultTableModel = (DefaultTableModel) jTable.getModel();
+                String[] columnName = {
+                        "Issue Id",
+                        "Student Id",
+                        "Student Name",
+                        "Accession Id",
+                        "Book Title",
+                        "Issued Date"
+                };
+                defaultTableModel.setColumnIdentifiers(columnName);
+                while (resultSet.next()) {
+                    assert issuedBook != null;
+                    issuedBook.setIssuedId(resultSet.getInt(1));
+                    issuedBook.setStudentId(resultSet.getInt(2));
+                    issuedBook.setAccessionId(resultSet.getInt(3));
+                    issuedBook.setIssuedDate(resultSet.getString(4));
+                    findStudentThroughStudentId(issuedBook.getStudentId());
+                    findBookThroughAccessionId(issuedBook.getAccessionId());
+                    assert student != null;
+                    assert book != null;
+                    Object[] row = {
+                            issuedBook.getIssuedId(),
+                            issuedBook.getStudentId(),
+                            student.getStudentName(),
+                            issuedBook.getAccessionId(),
+                            book.getTitle(),
+                            issuedBook.getIssuedDate()
+                    };
+                    defaultTableModel.addRow(row);
+                }
+                jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); //it does not work
+                jTable.setEnabled(false);
+                jScrollPane.setBounds(0, 0, mainTabbedPane.getWidth(), mainTabbedPane.getHeight());
+            } else {
+                JLabel message = new JLabel("Table is Empty");
+                message.setBounds(10,5,100,30);
+                message.setForeground(Color.RED);
+                showIssuedBookPanel.add(message);
+                //JOptionPane.showMessageDialog(null,"Table is Empty","Error",JOptionPane.WARNING_MESSAGE);
+            }
+            showIssuedBookPanel.revalidate();
+            showIssuedBookPanel.repaint();
+            showIssuedBookPanel.add(jScrollPane);
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
+    }
+
+    public void initializeShowLibraryHistoryTablePanel() {
+        showLibraryHistoryPanel.removeAll();
+        JTable jTable = new JTable();
+        JScrollPane jScrollPane = new JScrollPane(jTable);
+        ResultSet resultSet;
+        boolean isEmpty = true;
+        try {
+            String query = "SELECT COUNT(*) AS count FROM borrow";
+            preStmt = con.prepareStatement(query);
+            resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                if (count == 0) {
+                    isEmpty = false;
+                }
+            }
+            if (isEmpty){
+                preStmt = con.prepareStatement("select * from borrow;");
+                resultSet = preStmt.executeQuery();
+                DefaultTableModel defaultTableModel = (DefaultTableModel) jTable.getModel();
+                String[] columnName = {
+                        "Borrow Id",
+                        "Student Id",
+                        "Student Name",
+                        "Accession Id",
+                        "Book Title",
+                        "Borrowed Date",
+                        "Return Date",
+                        "Fine Amount"
+                };
+                defaultTableModel.setColumnIdentifiers(columnName);
+                while (resultSet.next()) {
+                    assert borrow != null;
+                    borrow.setBorrowId(resultSet.getInt(1));
+                    borrow.setStudentId(resultSet.getInt(2));
+                    borrow.setAccessionId(resultSet.getInt(3));
+                    borrow.setBorrowDate(resultSet.getString(4));
+                    borrow.setReturnDate(resultSet.getString(5));
+                    borrow.setFineAmount(resultSet.getDouble(6));
+                    findStudentThroughStudentId(borrow.getStudentId());
+                    findBookThroughAccessionId(borrow.getAccessionId());
+                    assert student != null;
+                    assert book != null;
+                    Object[] row = {
+                            borrow.getBorrowId(),
+                            borrow.getStudentId(),
+                            student.getStudentName(),
+                            borrow.getAccessionId(),
+                            book.getTitle(),
+                            borrow.getBorrowDate(),
+                            borrow.getReturnDate(),
+                            borrow.getFineAmount()
+                    };
+                    defaultTableModel.addRow(row);
+                }
+                jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); //it does not work
+                jTable.setEnabled(false);
+                jScrollPane.setBounds(0, 0, mainTabbedPane.getWidth(), mainTabbedPane.getHeight());
+            } else {
+                JLabel message = new JLabel("Table is Empty");
+                message.setBounds(10,5,100,30);
+                message.setForeground(Color.RED);
+                showLibraryHistoryPanel.add(message);
+                //JOptionPane.showMessageDialog(null,"Table is Empty","Error",JOptionPane.WARNING_MESSAGE);
+            }
+            showLibraryHistoryPanel.revalidate();
+            showLibraryHistoryPanel.repaint();
+            showLibraryHistoryPanel.add(jScrollPane);
         } catch (SQLException e) {
             e.getStackTrace();
         }
@@ -1095,6 +1241,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             if(result==0) {
                 System.out.println(generateIssuedBookObjectQuery() ? clearIssuedBookInnerForm() : "false");
                 initializeShowBookTablePanel();
+                initializeShowIssuedBookTablePanel();
                 assert issuedBook != null;
                 JOptionPane.showMessageDialog(null,"Issue Id: "+issuedBook.getIssuedId(),"Book Successfully Issued",JOptionPane.WARNING_MESSAGE);
             }
@@ -1132,6 +1279,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if(result==0) {
+                returnBookTextFields[8].setText(returnBookTextFields[8].getText().isEmpty()?"0":"");
                 initializeBorrowBookObject();
                 if (generateBorrowBookObjectQuery() && deleteIssuedBookQuery(issuedBook.getIssuedId())) {
                     returnBookPanel.removeAll();
@@ -1139,6 +1287,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     returnBookPanel.revalidate();
                     returnBookPanel.repaint();
                     initializeShowBookTablePanel();
+                    initializeShowLibraryHistoryTablePanel();
                     JOptionPane.showMessageDialog(null, "Thank you for return the book", "Book Return Successfully", JOptionPane.WARNING_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(null, "Some Error Occurred");
@@ -1251,6 +1400,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 initializeShowBookTablePanel();
             if (mainTabbedPane.getSelectedIndex() == 5)
                 initializeShowStudentTablePanel();
+            if (mainTabbedPane.getSelectedIndex() == 6)
+                initializeShowIssuedBookTablePanel();
+            if (mainTabbedPane.getSelectedIndex() == 7)
+                initializeShowLibraryHistoryTablePanel();
         }
     }
 }
