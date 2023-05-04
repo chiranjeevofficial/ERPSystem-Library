@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,22 +28,24 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     };
     private final Student student = Student.getInstance();
     private final Book book = Book.getInstance();
+    private final Borrow borrow = Borrow.getInstance();
     private final IssuedBook issuedBook = IssuedBook.getInstance();
-    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel;
+    private final JPanel newStudentPanel, newBookPanel, issuedBookPanel, showBookPanel, returnBookPanel;
     private final JTabbedPane mainTabbedPane;
     private final JLabel[] studentInfoLabel  = new JLabel[7];
+    private JLabel[] returnBookLabels;
     private JTextField[] studentInfoTextField;
     private JComboBox<String> bookCourseComboBox;
     private JComboBox<String> courseComboBox;
     private ButtonGroup genderButtonGroup;
     private JRadioButton male, female;
-    private JDateChooser studentDateChooser, bookDateChooser;
+    private JDateChooser studentDateChooser, bookDateChooser, returnDateChooser, returnBookIssueDateChooser;
     private final JButton addStudentButton = new JButton("Submit");
     private final JButton clearStudentButton = new JButton("Clear");
     private final JButton addBookButton = new JButton("Submit");
     private final JButton clearBookButton = new JButton("Clear");
-    private JButton[] issuedBookButton;
-    private JTextField[] bookTextField, issuedBookTextField;
+    private JButton[] issuedBookButton, returnBookButtons;
+    private JTextField[] bookTextField, issuedBookTextField, returnBookTextFields;
     JCheckBox accessionIdCheckBox;
     int getLatestAccessionId;
 
@@ -56,16 +59,19 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         newBookPanel = new JPanel(null);
         issuedBookPanel = new JPanel(null);
         showBookPanel = new JPanel(null);
+        returnBookPanel = new JPanel(null);
         mainTabbedPane.add("Add Student", newStudentPanel);
         mainTabbedPane.add("Add Book", newBookPanel);
         mainTabbedPane.add("Issue Book",issuedBookPanel);
+        mainTabbedPane.add("Return Book",returnBookPanel);
         mainTabbedPane.add("Show Book",showBookPanel);
         mainTabbedPane.setSelectedIndex(3);
         mainTabbedPane.addChangeListener(this);
         initializeNewStudentFormPanel();
         initializeNewBookFormPanel();
         initializeIssuedBookFormPanel();
-        initializeShowBookFormPanel();
+        initializeShowBookTablePanel();
+        initializeReturnBookFormPanel();
         mainFrame.add(mainTabbedPane);
         mainTabbedPane.revalidate();
         mainTabbedPane.repaint();
@@ -208,7 +214,144 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         }
     }
 
-    public void initializeShowBookFormPanel() {
+    public void initializeReturnBookFormPanel() {
+        String[] labelString = {
+                "Issued Id",
+                "Issued Id",
+                "Student Id",
+                "Student Name",
+                "Father Name",
+                "Issued Date",
+                "Accession Id",
+                "Book Title",
+                "Book Author",
+                "Return Date",
+                "Fine (If Applicable)"
+        };
+        String[] buttonString = {
+                "Find",
+                "Clear",
+                "Return",
+                "Re Search"
+        };
+        returnBookLabels = new JLabel[11];
+        returnBookTextFields = new JTextField[9];
+        returnBookButtons = new JButton[4];
+        returnBookIssueDateChooser = new JDateChooser();
+        int xAxis = 10, yAxis = 10;
+        for (int i = 0 ; i < 5 ; i++) {
+            if (i == 0) {
+                returnBookLabels[i] = new JLabel(labelString[i]);
+                returnBookLabels[i].setBounds(xAxis, yAxis, 100, 30);
+                returnBookPanel.add(returnBookLabels[i]);
+                xAxis += 120;
+
+                returnBookTextFields[i] = new JTextField(50);
+                returnBookTextFields[i].setBounds(xAxis,yAxis,200,30);
+                returnBookTextFields[i].setDisabledTextColor(Color.BLACK);
+                returnBookTextFields[i].addKeyListener(this);
+                returnBookPanel.add(returnBookTextFields[i]);
+                xAxis += 270;
+
+                returnBookButtons[i] = new JButton(buttonString[i]);
+                returnBookButtons[i].setBounds(xAxis,yAxis,90,30);
+                returnBookButtons[i].addActionListener(this);
+                returnBookPanel.add(returnBookButtons[i]);
+                xAxis += 110;
+                returnBookButtons[i+1] = new JButton(buttonString[i+1]);
+                returnBookButtons[i+1].setBounds(xAxis,yAxis,90,30);
+                returnBookButtons[i+1].addActionListener(this);
+                returnBookPanel.add(returnBookButtons[i+1]);
+                xAxis = 10; yAxis = 100;
+            }
+            if (i != 0) {
+                if (i == 2 || i == 3) {
+                    returnBookButtons[i] = new JButton(buttonString[i]);
+                    returnBookButtons[i].addActionListener(this);
+                    returnBookPanel.add(returnBookButtons[i]);
+
+                    returnBookLabels[i+7] = new JLabel(labelString[i+7]);
+                    returnBookPanel.add(returnBookLabels[i+7]);
+                }
+                returnBookLabels[i] = new JLabel(labelString[i]);
+                returnBookPanel.add((returnBookLabels[i]));
+
+                returnBookTextFields[i] = new JTextField(50);
+                returnBookTextFields[i].setEnabled(false);
+                returnBookTextFields[i].setDisabledTextColor(Color.BLACK);
+                returnBookPanel.add(returnBookTextFields[i]);
+
+                returnBookLabels[i+4] = new JLabel(labelString[i+4]);
+                returnBookPanel.add((returnBookLabels[i+4]));
+
+                returnBookTextFields[i+3] = new JTextField(50);
+                returnBookTextFields[i+3].setDisabledTextColor(Color.BLACK);
+                returnBookTextFields[i+3].setEnabled(false);
+                returnBookPanel.add(returnBookTextFields[i+3]);
+            }
+        }
+        returnBookTextFields[8] = new JTextField(50);
+        returnBookTextFields[8].setEnabled(true);
+        returnBookTextFields[8].addKeyListener(this);
+        returnBookPanel.add(returnBookTextFields[8]);
+        returnDateChooser = new JDateChooser(new Date());
+        JTextField textField = (JTextField) returnDateChooser.getDateEditor().getUiComponent();
+        textField.setDisabledTextColor(Color.BLACK);
+        returnDateChooser.setEnabled(false);
+        returnBookPanel.add(returnDateChooser);
+
+        textField = (JTextField) returnBookIssueDateChooser.getDateEditor().getUiComponent();
+        textField.setDisabledTextColor(Color.BLACK);
+        returnBookIssueDateChooser.setEnabled(false);
+        returnBookPanel.add(returnBookIssueDateChooser);
+    }
+
+    public void initializeReturnBookInnerForm() {
+        int xAxis = 10, yAxis = 100;
+        for (int i = 1 ; i < 5 ; i++){
+            if (i == 2 || i == 3){
+                returnBookLabels[i + 7].setBounds(xAxis, 270, 120, 30);
+                if (i == 2){
+                    returnBookTextFields[i + 6].setBounds(520, 270, 200, 30);
+                }
+                xAxis += 390;
+            }
+            returnBookLabels[i].setBounds(10, yAxis, 120, 30);
+            returnBookTextFields[i].setBounds(130, yAxis, 200, 30);
+            returnBookLabels[i + 4].setBounds(400, yAxis, 120, 30);
+            returnBookTextFields[i + 3].setBounds(520, yAxis, 200, 30);
+            yAxis += 33;
+        }
+        returnBookButtons[2].setBounds(250, 370, 100, 30);
+        returnBookButtons[3].setBounds(370, 370, 100, 30);
+        returnBookTextFields[8].setBounds(520,270,200,30);
+        returnDateChooser.setBounds(130,270,200,30);
+        assert issuedBook != null;
+        returnBookTextFields[1].setText(String.valueOf(issuedBook.getIssuedId()));
+        returnBookTextFields[2].setText(String.valueOf(issuedBook.getStudentId()));
+        assert student != null;
+        returnBookTextFields[3].setText(student.getStudentName());
+        returnBookTextFields[4].setText(student.getFatherName());
+
+        //-----------------------------------
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(issuedBook.getIssuedDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        returnBookIssueDateChooser.setDate(date);
+        returnBookIssueDateChooser.setDateFormatString("d-MMM-yyyy");
+        returnBookIssueDateChooser.setBounds(520,100,200,30);
+        //-----------------------------------
+
+        returnBookTextFields[5].setText(String.valueOf(issuedBook.getAccessionId()));
+        assert book != null;
+        returnBookTextFields[6].setText(book.getTitle());
+        returnBookTextFields[7].setText(book.getAuthor());
+    }
+
+    public void initializeShowBookTablePanel() {
         showBookPanel.removeAll();
         JTable jTable = new JTable();
         JScrollPane jScrollPane = new JScrollPane(jTable);
@@ -364,6 +507,22 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return latestIssuedId;
     }
 
+    public int getLatestBorrowId() {
+        String query = "SELECT MAX(`Borrow ID`) FROM borrow;";
+        int latestBorrowId = 0;
+        try {
+            preStmt = con.prepareStatement(query);
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                latestBorrowId = resultSet.getInt(1);
+            }
+            latestBorrowId+=1;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return latestBorrowId;
+    }
+
     public void initializeStudentObject() {
         assert student != null;
         student.setStudentId(getLatestStudentID());
@@ -392,14 +551,22 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         System.out.println(book);
     }
 
-    
+    public void initializeBorrowBookObject() {
+        assert borrow != null;
+        borrow.setBorrowId(getLatestBorrowId());
+        assert issuedBook != null;
+        borrow.setStudentId(issuedBook.getStudentId());
+        borrow.setAccessionId(issuedBook.getAccessionId());
+        borrow.setBorrowDate(new SimpleDateFormat("yyyy-MM-dd").format(returnBookIssueDateChooser.getDate()));
+        borrow.setReturnDate(new SimpleDateFormat("yyyy-MM-dd").format(returnDateChooser.getDate()));
+        borrow.setFineAmount(Double.parseDouble(returnBookTextFields[8].getText()));
+    }
 
-    public Object clearStudentForm() {
+    public void clearStudentForm() {
         for (JTextField jTextField : studentInfoTextField) jTextField.setText("");
         genderButtonGroup.clearSelection();
         courseComboBox.setSelectedIndex(0);
         studentDateChooser.setDate(null);
-        return null;
     }
 
     public Object clearBookForm() {
@@ -481,6 +648,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         }
         System.out.println(validate?"true":"false");
         return validate;
+    }
+
+    public boolean returnBookFormValidation() {
+        return !returnBookTextFields[0].getText().isEmpty();
     }
 
     public boolean generateStudentObjectQuery() {
@@ -594,16 +765,51 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean findStudentThroughStudentId() {
+    public boolean deleteIssuedBookQuery(int issuedId) {
+        boolean validate;
+        try {
+            preStmt = con.prepareStatement("DELETE FROM issued WHERE `Issued Id` = ?");
+            preStmt.setInt(1,issuedId);
+            assert borrow != null;
+            System.out.println(preStmt.executeUpdate() + " row(s) inserted.");
+            validate = setBookAvailabilityQuery(true, borrow.getAccessionId());
+        } catch (SQLException e) {
+            validate = false;
+            e.getStackTrace();
+        }
+        return validate;
+    }
+
+    public boolean generateBorrowBookObjectQuery() {
+        boolean validate = true;
+        try {
+            preStmt = con.prepareStatement("insert into borrow (`Borrow Id`, `Student Id`, `Accession Id`, `Borrow Date`, `Return Date`, `Fine Amount`) VALUES \n" +
+                    "(?, ?, ?, ?, ?, ?);");
+            assert borrow != null;
+            preStmt.setInt(1, borrow.getBorrowId());
+            assert issuedBook != null;
+            preStmt.setInt(2,borrow.getStudentId());
+            preStmt.setInt(3,borrow.getAccessionId());
+            preStmt.setString(4,borrow.getBorrowDate());
+            preStmt.setString(5,borrow.getReturnDate());
+            preStmt.setDouble(6,borrow.getFineAmount());
+            System.out.println(preStmt.executeUpdate() + " row(s) inserted.");
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
+        return validate;
+    }
+
+    public boolean findStudentThroughStudentId(int studentId) {
         boolean validate = true;
         String query = "SELECT `Student Name`, `Father Name` FROM student WHERE `Student Id` = ?";
         try {
             preStmt = con.prepareStatement(query);
-            preStmt.setInt(1, Integer.parseInt(issuedBookTextField[0].getText()));
+            preStmt.setInt(1, studentId);
             ResultSet resultSet = preStmt.executeQuery();
             if (resultSet.next()) {
                 assert student != null;
-                student.setStudentId(Integer.parseInt(issuedBookTextField[0].getText()));
+                student.setStudentId(studentId);
                 student.setStudentName(resultSet.getString("Student Name"));
                 student.setFatherName(resultSet.getString("Father Name"));
             }
@@ -618,16 +824,16 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean findBookThroughAccessionId() {
+    public boolean findBookThroughAccessionId(int accessionId) {
         boolean validate = true;
         String query = "SELECT `Title`, `Author` FROM book WHERE `Accession Id` = ?";
         try {
             preStmt = con.prepareStatement(query);
-            preStmt.setInt(1, Integer.parseInt(issuedBookTextField[1].getText()));
+            preStmt.setInt(1, accessionId);
             ResultSet resultSet = preStmt.executeQuery();
             if (resultSet.next()) {
                 assert book != null;
-                book.setAccessionId(Integer.parseInt(issuedBookTextField[1].getText()));
+                book.setAccessionId(accessionId);
                 book.setTitle(resultSet.getString("Title"));
                 book.setAuthor(resultSet.getString("Author"));
             }
@@ -642,11 +848,36 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
+    public boolean findIssuedBookThroughIssuedId() {
+        boolean validate = true;
+        String query = "SELECT * FROM issued WHERE `Issued Id` = ?";
+        try {
+            preStmt = con.prepareStatement(query);
+            preStmt.setInt(1,Integer.parseInt(returnBookTextFields[0].getText()));
+            ResultSet resultSet = preStmt.executeQuery();
+            if (resultSet.next()) {
+                assert issuedBook != null;
+                issuedBook.setIssuedId(resultSet.getInt(1));
+                issuedBook.setStudentId(resultSet.getInt(2));
+                issuedBook.setAccessionId(resultSet.getInt(3));
+                issuedBook.setIssuedDate(resultSet.getString(4));
+            } else {
+                validate = false;
+                JOptionPane.showMessageDialog(null,"Invalid Issued Id");
+                returnBookTextFields[0].setText("");
+            }
+        } catch (SQLException e) {
+            validate = false;
+            e.getStackTrace();
+        }
+        return validate;
+    }
+
     public boolean generateIssuedBookInnerPanel() {
         boolean validate;
         validate = getBookAvailabilityQuery(Integer.parseInt(issuedBookTextField[1].getText()));
-        validate = findStudentThroughStudentId() && validate;
-        validate = findBookThroughAccessionId() && validate;
+        validate = findStudentThroughStudentId(Integer.parseInt(issuedBookTextField[0].getText())) && validate;
+        validate = findBookThroughAccessionId(Integer.parseInt(issuedBookTextField[1].getText())) && validate;
         
         if (validate) {
             String[] labelString = {"Student Id", "Student Name", "Father Name", "Issue Date", "Accession No", "Title", "Author"};
@@ -743,7 +974,13 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (addStudentButton == e.getSource()) {
             if (studentFormValidation()) {
                 initializeStudentObject();
-                System.out.println(generateStudentObjectQuery()?clearStudentForm():"false");
+                if (generateStudentObjectQuery()) {
+                    clearStudentForm();
+                    assert student != null;
+                    JOptionPane.showMessageDialog(null,"Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
+                }
+                else
+                    JOptionPane.showMessageDialog(null,"Some Error Occurred");
             }
             else
                 JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
@@ -759,6 +996,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 assert book != null;
                 for (int i = book.getQuantity(); i != 0 ; i--)
                     System.out.println(generateBookObjectQuery()?clearBookForm():"false");
+                initializeShowBookTablePanel();
             }
             else
                 JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
@@ -786,12 +1024,62 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     JOptionPane.QUESTION_MESSAGE);
             if(result==0) {
                 System.out.println(generateIssuedBookObjectQuery() ? clearIssuedBookInnerForm() : "false");
+                initializeShowBookTablePanel();
                 assert issuedBook != null;
                 JOptionPane.showMessageDialog(null,"Issue Id: "+issuedBook.getIssuedId(),"Book Successfully Issued",JOptionPane.WARNING_MESSAGE);
             }
         }
         if (e.getSource() == issuedBookButton[3]) {
             clearIssuedBookInnerForm();
+        }
+        if (e.getSource() == returnBookButtons[0]) {
+            if (returnBookFormValidation()){
+                if (findIssuedBookThroughIssuedId()) {
+                    assert issuedBook != null;
+                    if (findStudentThroughStudentId(issuedBook.getStudentId())) {
+                        assert book != null;
+                        if (findBookThroughAccessionId(issuedBook.getAccessionId())) {
+                            returnBookTextFields[0].setEnabled(false);
+                            returnBookButtons[0].setEnabled(false);
+                            returnBookButtons[1].setEnabled(false);
+                            initializeReturnBookInnerForm();
+                            returnBookPanel.revalidate();
+                            returnBookPanel.repaint();
+                        }
+                    }
+                }
+            }  else
+                JOptionPane.showMessageDialog(null, "Please Completely fill the form", "Alert", JOptionPane.WARNING_MESSAGE);
+        }
+        if (e.getSource() == returnBookButtons[1]) {
+            returnBookTextFields[0].setText("");
+        }
+        if (e.getSource() == returnBookButtons[2]) {
+            assert issuedBook != null;
+            int result = JOptionPane.showConfirmDialog(null,
+                    "You sure, all above details are correct.",
+                    "Confirmation for Book Return",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if(result==0) {
+                initializeBorrowBookObject();
+                if (generateBorrowBookObjectQuery() && deleteIssuedBookQuery(issuedBook.getIssuedId())) {
+                    returnBookPanel.removeAll();
+                    initializeReturnBookFormPanel();
+                    returnBookPanel.revalidate();
+                    returnBookPanel.repaint();
+                    initializeShowBookTablePanel();
+                    JOptionPane.showMessageDialog(null, "Thank you for return the book", "Book Return Successfully", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Some Error Occurred");
+                }
+            }
+        }
+        if (e.getSource() == returnBookButtons[3]) {
+            returnBookPanel.removeAll();
+            initializeReturnBookFormPanel();
+            returnBookPanel.revalidate();
+            returnBookPanel.repaint();
         }
     }
 
@@ -809,12 +1097,12 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             if (!(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_SPACE))
                 e.consume();
         }
-        if (e.getSource() == bookTextField[0] || e.getSource() == bookTextField[5] || e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1]) {
+        if (e.getSource() == bookTextField[0] || e.getSource() == bookTextField[5] || e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1] || e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1] || e.getSource() == returnBookTextFields[0]) {
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
         }
-        if (e.getSource() == bookTextField[6]) {
+        if (e.getSource() == bookTextField[6] || e.getSource() == returnBookTextFields[8]) {
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == '.' || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
@@ -822,13 +1110,16 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 if (bookTextField[6].getText().contains(".")) {
                     e.consume();
                 }
+                if (returnBookTextFields[8].getText().contains(".")) {
+                    e.consume();
+                }
             }
         }
-        if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1]) {
+        /*if (e.getSource() == issuedBookTextField[0] || e.getSource() == issuedBookTextField[1]) {
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
                 e.consume();
-        }
+        }**/
         
     }
 
@@ -894,7 +1185,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() == mainTabbedPane) {
             if (mainTabbedPane.getSelectedIndex() == 3)
-                initializeShowBookFormPanel();
+                initializeShowBookTablePanel();
         }
     }
 }

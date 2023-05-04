@@ -4,7 +4,13 @@ create table borrow (
     `Accession Id` int not null,
     `Borrow Date` varchar(20) not null,
     `Return Date` varchar(20) not null,
-    `Fine Amount` decimal(10,2) not null,
+    `Fine Amount` decimal(10,2) ,
     foreign key (`Student Id`) references student (`Student Id`),
     foreign key (`Accession Id`) references book (`Accession Id`)
 );
+
+insert into borrow (`Borrow Id`, `Student Id`, `Accession Id`, `Borrow Date`, `Return Date`, `Fine Amount`) VALUES 
+(1, 1, 1, '2023-05-01', '2023-05-02', 0);
+
+insert into borrow (`Borrow Id`, `Student Id`, `Accession Id`, `Borrow Date`, `Return Date`, `Fine Amount`) VALUES 
+(?, ?, ?, ?, ?, ?);
