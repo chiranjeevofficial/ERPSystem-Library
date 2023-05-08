@@ -2,7 +2,7 @@ package lms;
 
 public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
-    private int studentId, course;
+    private int studentId, courseId;
     private static Student ref;
 
     private Student() {
@@ -33,8 +33,8 @@ public class Student {
         this.fatherName = fatherName;
     }
 
-    public void setCourse(int course) {
-        this.course = course;
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -61,8 +61,8 @@ public class Student {
         return fatherName;
     }
 
-    public int getCourse() {
-        return course;
+    public int getCourseId() {
+        return courseId;
     }
 
     public String getPhoneNumber() {
@@ -85,7 +85,7 @@ public class Student {
         return  getStudentId()+" "+
                 getStudentName()+" "+
                 getFatherName()+" "+
-                getCourse()+" "+
+                getCourseId()+" "+
                 getGender()+" "+
                 getPhoneNumber()+" "+
                 getAddress();

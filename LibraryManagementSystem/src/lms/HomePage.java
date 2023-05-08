@@ -3,6 +3,11 @@ package lms;
 import BrahmasmiLiabrary.util;
 import com.toedter.calendar.JDateChooser;
 import org.jetbrains.annotations.NotNull;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -77,6 +82,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     public void initNewStudentPanel() {
+        tabbedPane[0].removeAll();
         String[] labelNames = {
                 "Student Name",
                 "Father Name",
@@ -137,6 +143,30 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
 
         tabbedPane[0].add(studentCourseComboBox);
         tabbedPane[0].add(dateChooser[0]);
+
+        /* Start implementation of pie chart*/
+        // Create a dataset
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        for(int i = 1 ; i <= 6 ; i++) {
+            if (getEnrolledStudentByCourseId(i) > 0)
+                dataset.setValue(courseString[i], getEnrolledStudentByCourseId(i));
+        }
+
+        // Create a chart
+        JFreeChart chart = ChartFactory.createPieChart(
+                "Student Enrollment By Course",
+                dataset,
+                true,
+                true,
+                false
+        );
+
+        // Create a ChartPanel to display the chart
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        chartPanel.setBounds(500,10,600,600);
+        tabbedPane[0].add(chartPanel);
+
         revalidateAndRepaintJPanel(tabbedPane[0]);
     }
 
@@ -355,7 +385,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     student.setStudentId(resultSet.getInt(1));
                     student.setStudentName(resultSet.getString(2));
                     student.setFatherName(resultSet.getString(3));
-                    student.setCourse(resultSet.getInt(4));
+                    student.setCourseId(resultSet.getInt(4));
                     student.setDateOfBirth(resultSet.getString(5));
                     student.setGender(resultSet.getString(6));
                     student.setPhoneNumber(resultSet.getString(7));
@@ -364,7 +394,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                             student.getStudentId(),
                             student.getStudentName(),
                             student.getFatherName(),
-                            studentCourseComboBox.getItemAt(student.getCourse()),
+                            studentCourseComboBox.getItemAt(student.getCourseId()),
                             student.getDateOfBirth(),
                             student.getGender(),
                             student.getPhoneNumber(),
@@ -491,8 +521,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     issuedBook.setStudentId(resultSet.getInt(2));
                     issuedBook.setAccessionId(resultSet.getInt(3));
                     issuedBook.setIssuedDate(resultSet.getString(4));
-                    findStudentThroughStudentId(issuedBook.getStudentId());
-                    findBookThroughAccessionId(issuedBook.getAccessionId());
+                    findStudentByStudentId(issuedBook.getStudentId());
+                    findBookByAccessionId(issuedBook.getAccessionId());
                     assert student != null;
                     assert book != null;
                     Object[] row = {
@@ -561,8 +591,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     borrow.setBorrowDate(resultSet.getString(4));
                     borrow.setReturnDate(resultSet.getString(5));
                     borrow.setFineAmount(resultSet.getDouble(6));
-                    findStudentThroughStudentId(borrow.getStudentId());
-                    findBookThroughAccessionId(borrow.getAccessionId());
+                    findStudentByStudentId(borrow.getStudentId());
+                    findBookByAccessionId(borrow.getAccessionId());
                     assert student != null;
                     assert book != null;
                     Object[] row = {
@@ -598,8 +628,8 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     public boolean initInnerIssuedBookPanel() {
         boolean validate;
         validate = getBookAvailabilityQuery(Integer.parseInt(issuedBookTextField[1].getText()));
-        validate = findStudentThroughStudentId(Integer.parseInt(issuedBookTextField[0].getText())) && validate;
-        validate = findBookThroughAccessionId(Integer.parseInt(issuedBookTextField[1].getText())) && validate;
+        validate = findStudentByStudentId(Integer.parseInt(issuedBookTextField[0].getText())) && validate;
+        validate = findBookByAccessionId(Integer.parseInt(issuedBookTextField[1].getText())) && validate;
 
         if (validate) {
             String[] labelString = {"Student Id", "Student Name", "Father Name", "Issue Date", "Accession No", "Title", "Author"};
@@ -782,7 +812,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         student.setStudentId(getLatestStudentId());
         student.setStudentName(studentInfoTextField[0].getText());
         student.setFatherName(studentInfoTextField[1].getText());
-        student.setCourse(studentCourseComboBox.getSelectedIndex());
+        student.setCourseId(studentCourseComboBox.getSelectedIndex());
         student.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(dateChooser[0].getDate()));
         student.setGender(getGenderSelected());
         student.setPhoneNumber(studentInfoTextField[2].getText());
@@ -852,7 +882,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     public boolean studentFormValidation() {
         boolean validate = true;
         for (JTextField jTextField : studentInfoTextField) {
-            if (jTextField.getText().equals("") || jTextField.getText().length() < 3) {
+            if (jTextField.getText().isEmpty() || jTextField.getText().length() < 3) {
                 validate = false;
                 break;
             }
@@ -866,7 +896,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean  bookFormValidation() {
+    public boolean bookFormValidation() {
         boolean validate = true;
         for (int i = 1 ; i < bookTextField.length; i++) {
             if (i != 5 && i !=6 && (bookTextField[i].getText().equals("") || bookTextField[i].getText().length() < 3)) {
@@ -922,7 +952,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             preStmt.setInt(1, student.getStudentId());
             preStmt.setString(2, student.getStudentName());
             preStmt.setString(3, student.getFatherName());
-            preStmt.setInt(4, student.getCourse());
+            preStmt.setInt(4, student.getCourseId());
             preStmt.setString(5, student.getDateOfBirth());
             preStmt.setString(6, student.getGender());
             preStmt.setString(7, student.getPhoneNumber());
@@ -930,6 +960,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
 
             // Execute the statement to insert the data
             System.out.println(preStmt.executeUpdate() + " row(s) inserted.");
+            
         } catch (SQLException e) {
             validate = false;
             System.out.println(e.getMessage());
@@ -1042,7 +1073,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean findStudentThroughStudentId(int studentId) {
+    public boolean findStudentByStudentId(int studentId) {
         boolean validate = true;
         String query = "SELECT `Student Name`, `Father Name` FROM student WHERE `Student Id` = ?";
         try {
@@ -1066,7 +1097,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean findBookThroughAccessionId(int accessionId) {
+    public boolean findBookByAccessionId(int accessionId) {
         boolean validate = true;
         String query = "SELECT `Title`, `Author` FROM book WHERE `Accession Id` = ?";
         try {
@@ -1090,7 +1121,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public boolean findIssuedBookThroughIssuedId(int issuedId) {
+    public boolean findIssuedBookByIssuedId(int issuedId) {
         boolean validate = true;
         String query = "SELECT * FROM issued WHERE `Issued Id` = ?";
         try {
@@ -1147,6 +1178,36 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
+    public int getEnrolledStudentByCourseId(int courseId) {
+        int enrolledStudent = 0;
+        try {
+            preStmt = con.prepareStatement("SELECT `Enrolled Students` FROM course where `Course Id` = ?");
+            preStmt.setInt(1,courseId);
+            ResultSet resultSet = preStmt.executeQuery();
+            while(resultSet.next()) {
+                enrolledStudent = resultSet.getInt(1);
+            }
+        } catch(SQLException e) {
+            e.getStackTrace();
+        }
+        return enrolledStudent;
+    }
+
+    public boolean updateEnrolledStudentByCourseId(int courseId) {
+        boolean validate = true;
+        int temp = getEnrolledStudentByCourseId(courseId)+1;
+        try {
+            preStmt = con.prepareStatement("UPDATE course SET `Enrolled Students` = ? WHERE `Course Id` = "+courseId);
+            preStmt.setInt(1, temp);
+            System.out.println(preStmt.executeUpdate()+" row(s) updated.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.getStackTrace();
+            validate = false;
+        }
+        return validate;
+    }
+
     public String getGenderSelected() {
         return maleRadioButton.isSelected()?"Male":"Female";
     }
@@ -1160,9 +1221,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (newStudentButtons[0] == e.getSource()) {
             if (studentFormValidation()) {
                 initializeStudentObject();
-                if (generateInsertStudentQuery()) {
-                    clearStudentForm();
-                    assert student != null;
+                assert student != null;
+                if (generateInsertStudentQuery() && updateEnrolledStudentByCourseId(student.getCourseId())) {
+                    tabbedPane[0].removeAll();
+                    initNewStudentPanel();
                     JOptionPane.showMessageDialog(null,"Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
                     initShowStudentTablePanel();
                 }
@@ -1229,9 +1291,9 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (e.getSource() == returnBookButtons[0]) {
             if (returnBookFormValidation()){
                 assert issuedBook != null;
-                if (findIssuedBookThroughIssuedId(issuedBook.getIssuedId())) {
-                    if (findStudentThroughStudentId(issuedBook.getStudentId())) {
-                        if (findBookThroughAccessionId(issuedBook.getAccessionId())) {
+                if (findIssuedBookByIssuedId(issuedBook.getIssuedId())) {
+                    if (findStudentByStudentId(issuedBook.getStudentId())) {
+                        if (findBookByAccessionId(issuedBook.getAccessionId())) {
                             returnBookTextFields[0].setEnabled(false);
                             returnBookButtons[0].setEnabled(false);
                             returnBookButtons[1].setEnabled(false);
@@ -1364,10 +1426,18 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     @Override
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() == mainTabbedPane) {
+            if (mainTabbedPane.getSelectedIndex() == 0)
+                initNewStudentPanel();
+            if (mainTabbedPane.getSelectedIndex() == 1)
+                initNewBookPanel();
+            if (mainTabbedPane.getSelectedIndex() == 2)
+                initIssuedBookPanel();
             if (mainTabbedPane.getSelectedIndex() == 3)
-                initShowBookTablePanel();
-            if (mainTabbedPane.getSelectedIndex() == 5)
+                initReturnBookPanel();
+            if (mainTabbedPane.getSelectedIndex() == 4)
                 initShowStudentTablePanel();
+            if (mainTabbedPane.getSelectedIndex() == 5)
+                initShowBookTablePanel();
             if (mainTabbedPane.getSelectedIndex() == 6)
                 initShowIssuedBookTablePanel();
             if (mainTabbedPane.getSelectedIndex() == 7)
