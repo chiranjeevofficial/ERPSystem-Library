@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="jcalendar-1.4">
+  <library name="jfreechart-1.0.19">
     <CLASSES>
-      <root url="jar://C:/api/jcalendar-1.4.jar!/" />
+      <root url="jar://C:/api/jfreechart-1.0.19.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

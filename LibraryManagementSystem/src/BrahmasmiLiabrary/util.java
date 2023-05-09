@@ -8,13 +8,38 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+// import java.awt.image.BufferedImage;
 
 public class util {
     public static final int
-            labelHeaderX = 50, labelHeaderY = 130, labelHeaderWidth = 200, labelHeaderHeight = 50,
-            textFieldX = 270, textFieldY = 0, textFieldWidth = 200, textFieldHeight = 35,
-            companyNameWidth = 265,
-            passwordFieldY = 0, passwordFieldWidth = 200;
+            labelHeaderX = 50,
+            labelHeaderY = 130,
+            labelHeaderWidth = 200,
+            labelHeaderHeight = 50,
+            textFieldX = 270,
+            textFieldWidth = 200,
+            textFieldHeight = 35,
+            passwordFieldWidth = 200;
+
+    public static final Font
+            titleFont = new Font("Century Gothic", Font.BOLD,25),
+            labelHeaderFont = new Font("Century Gothic",Font.BOLD,40),
+            textFieldFont = new Font("MS Reference Sans Serif",Font.PLAIN,20);
+
+    public static final Border
+            underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
+            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1);
+            /*emptyBorder = BorderFactory.createEmptyBorder(10, 20, 10, 20);
+            allSideRoundedBorder = BorderFactory.createCompoundBorder(allSideBorder,emptyBorder);*/
+
+    public static final Color
+            purpleColor = new Color(183,0,255),
+            whiteColor = new Color(255,255,255),
+            orangeColor = new Color(255,152,0);
+            /*blueColor = new Color(0, 55, 255),
+            pinkColor = new Color(255, 0, 183);*/
+
+
     public static Connection getConnectionWithMySQL(String databaseName, String username, String password) {
         Connection con = null;
         try {
@@ -42,13 +67,13 @@ public class util {
     }
 
     public static void setMainFrame(JFrame frame, int width, int height) {
-    frame.setLayout(null);
-    frame.setSize(width,height);
-    frame.setVisible(true);
-    frame.setLocationRelativeTo(null); // open application to center on the screen
-    frame.setResizable(true);
-    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(null);
+        frame.setSize(width,height);
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null); // open application to center on the screen
+        frame.setResizable(true);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static Dimension getScreenDimension() {
@@ -58,28 +83,6 @@ public class util {
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         return new Dimension(screenSize.width - insets.left - insets.right, screenSize.height - insets.top - insets.bottom);
     }
-
-
-
-    public static final Font titleFont = new Font("Century Gothic", Font.BOLD,25),
-            labelHeaderFont = new Font("Century Gothic",Font.BOLD,40),
-            textFieldFont = new Font("MS Reference Sans Serif",Font.PLAIN,20);
-
-    public static final Border underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1),
-            emptyBorder = BorderFactory.createEmptyBorder(10, 20, 10, 20),
-            allSideRoundedBorder = BorderFactory.createCompoundBorder(allSideBorder,emptyBorder);
-
-    public static Border getRoundedBorder(Color color, int radius) {
-        return BorderFactory.createLineBorder(color, radius, true);
-    }
-
-
-    public static final Color blueColor = new Color(0, 55, 255),
-            purpleColor = new Color(183,0,255),
-            pinkColor = new Color(255, 0, 183),
-            whiteColor = new Color(255,255,255),
-            orangeColor = new Color(255,152,0);
 
     public static void loginButtonDecoration(JButton button) {
         button.setFocusable(false);
@@ -127,6 +130,17 @@ public class util {
         label.setSize(width,height);
     }
 
+    public static void setLabelOnCenter(JLabel label, int x, int y, int width, int height) {
+        label.setLocation(x,y);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setSize(width,height);
+    }
+
+    /*public static Border getRoundedBorder(Color color, int radius) {
+        return BorderFactory.createLineBorder(color, radius, true);
+    }
+
     public static void setLabelOnCenter(JButton label, int x, int y, int width, int height) {
         label.setSize(width,height);
         label.setLocation(x,y);
@@ -149,27 +163,17 @@ public class util {
         label.setOpaque(true);
     }
 
-    public static void setLabelOnCenter(JLabel label, int x, int y, int width, int height) {
-        label.setLocation(x,y);
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.CENTER);
-        label.setSize(width,height);
-    }
-
-
-
-
-    /*public static void setYellowBackgroundAndBottomBorder(JLabel label) {
-        label.setBorder(MyFont.underline);
+    public static void setYellowBackgroundAndBottomBorder(JLabel label) {
+        label.setBorder(util.underline);
         label.setBackground(Color.YELLOW);
         label.setOpaque(true);
-    }**/
+    }
 
-    /*public static void setMyFont(JTextField textField) {
-        textField.setFont(MyFont.textField);
-    }**/
+    public static void setMyFont(JTextField textField) {
+        textField.setFont(util.textFieldFont);
+    }
 
-    /*public static Color generateGradientColor(Color color1, Color color2, int width, int height) {
+    public static Color generateGradientColor(Color color1, Color color2, int width, int height) {
         GradientPaint gradient = new GradientPaint(10, 50, color1, width, height, color2);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
@@ -178,5 +182,4 @@ public class util {
         //g2d.dispose();
         return new Color(image.getRGB(0, 0));
     }**/
-
 }
