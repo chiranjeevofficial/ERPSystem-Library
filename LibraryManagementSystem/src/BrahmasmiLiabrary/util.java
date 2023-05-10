@@ -1,14 +1,17 @@
 package BrahmasmiLiabrary;
 
+import com.toedter.calendar.JDateChooser;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-// import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;
 
 public class util {
     public static final int
@@ -22,13 +25,15 @@ public class util {
             passwordFieldWidth = 200;
 
     public static final Font
-            titleFont = new Font("Century Gothic", Font.BOLD,25),
+            titleFont = new Font("Century Gothic", Font.BOLD,20),
+            normalText = new Font("Arial", Font.BOLD, 15),
             labelHeaderFont = new Font("Century Gothic",Font.BOLD,40),
             textFieldFont = new Font("MS Reference Sans Serif",Font.PLAIN,20);
 
     public static final Border
             underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1);
+            allSideBorder = BorderFactory.createLineBorder(Color.BLACK,1),
+            leftPadding10 = new EmptyBorder(0,10,0,0);
             /*emptyBorder = BorderFactory.createEmptyBorder(10, 20, 10, 20);
             allSideRoundedBorder = BorderFactory.createCompoundBorder(allSideBorder,emptyBorder);*/
 
@@ -137,7 +142,22 @@ public class util {
         label.setSize(width,height);
     }
 
-    /*public static Border getRoundedBorder(Color color, int radius) {
+    public static void setJCalendarTextFieldTextColorBlack(JDateChooser dateChooser) {
+        JTextField bookDateChooserTextField = (JTextField) dateChooser.getDateEditor().getUiComponent();
+        bookDateChooserTextField.setDisabledTextColor(Color.BLACK);
+    }
+
+    public static void revalidateAndRepaintJFrame(JFrame frame) {
+        frame.revalidate();
+        frame.repaint();
+    }
+    
+    public static void revalidateAndRepaintJPanel(JPanel panel) {
+        panel.revalidate();
+        panel.repaint();
+    }
+
+    public static Border getRoundedBorder(Color color, int radius) {
         return BorderFactory.createLineBorder(color, radius, true);
     }
 
@@ -181,5 +201,5 @@ public class util {
         g2d.fillRect(0, 0, width, height);
         //g2d.dispose();
         return new Color(image.getRGB(0, 0));
-    }**/
+    }
 }
