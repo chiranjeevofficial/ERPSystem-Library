@@ -3,6 +3,11 @@ package lms;
 import BrahmasmiLiabrary.util;
 import com.toedter.calendar.JDateChooser;
 import org.jetbrains.annotations.NotNull;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -137,6 +142,31 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
 
         tabbedPane[0].add(studentCourseComboBox);
         tabbedPane[0].add(dateChooser[0]);
+
+        /* Start implementation of pie chart*/
+        // Create a dataset
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        for(int i = 1 ; i <= 6 ; i++) {
+            if (getEnrolledStudentByCourseId(i) > 0)
+                dataset.setValue(courseString[i], getEnrolledStudentByCourseId(i));
+        }
+
+        if (!dataset.getKeys().isEmpty()) {
+            // Create a chart
+            JFreeChart chart = ChartFactory.createPieChart(
+                    "Student Enrollment By Course",
+                    dataset,
+                    true,
+                    true,
+                    false
+            );
+
+            // Create a ChartPanel to display the chart
+            ChartPanel chartPanel = new ChartPanel(chart);
+
+            chartPanel.setBounds(500,10,600,600);
+            tabbedPane[0].add(chartPanel);
+        }
         revalidateAndRepaintJPanel(tabbedPane[0]);
     }
 
@@ -1147,6 +1177,36 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
+    public int getEnrolledStudentByCourseId(int courseId) {
+        int enrolledStudent = 0;
+        try {
+            preStmt = con.prepareStatement("SELECT `Enrolled Students` FROM course where `Course Id` = ?");
+            preStmt.setInt(1,courseId);
+            ResultSet resultSet = preStmt.executeQuery();
+            while(resultSet.next()) {
+                enrolledStudent = resultSet.getInt(1);
+            }
+        } catch(SQLException e) {
+            e.getStackTrace();
+        }
+        return enrolledStudent;
+    }
+
+    public boolean updateEnrolledStudentByCourseId(int courseId) {
+        boolean validate = true;
+        int temp = getEnrolledStudentByCourseId(courseId)+1;
+        try {
+            preStmt = con.prepareStatement("UPDATE course SET `Enrolled Students` = ? WHERE `Course Id` = "+courseId);
+            preStmt.setInt(1, temp);
+            System.out.println(preStmt.executeUpdate()+" row(s) updated.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.getStackTrace();
+            validate = false;
+        }
+        return validate;
+    }
+
     public String getGenderSelected() {
         return maleRadioButton.isSelected()?"Male":"Female";
     }
@@ -1160,9 +1220,11 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (newStudentButtons[0] == e.getSource()) {
             if (studentFormValidation()) {
                 initializeStudentObject();
-                if (generateInsertStudentQuery()) {
+                assert student != null;
+                if (generateInsertStudentQuery() && updateEnrolledStudentByCourseId(student.getCourseId())) {
                     clearStudentForm();
-                    assert student != null;
+                    tabbedPane[0].removeAll();
+                    initNewStudentPanel();
                     JOptionPane.showMessageDialog(null,"Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
                     initShowStudentTablePanel();
                 }
