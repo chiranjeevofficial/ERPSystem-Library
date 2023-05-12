@@ -1,6 +1,5 @@
 package lms;
 
-import BrahmasmiLiabrary.util;
 import com.toedter.calendar.JDateChooser;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartFactory;
@@ -57,9 +56,10 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 "Show Issued Book",
                 "Book History"
         };
-        con = util.getConnectionWithMySQL("library","root","admin@2023");
+
+        con = Util.getConnectionWithMySQL("library","root","admin@2023");
         JFrame mainFrame = new JFrame("Home Page");
-        util.setMainFrame(mainFrame,util.getScreenDimension().width,util.getScreenDimension().height);
+        Util.setMainFrame(mainFrame,Util.getScreenDimension().width,Util.getScreenDimension().height);
         mainTabbedPane = new JTabbedPane();
         mainTabbedPane.setSize(mainFrame.getWidth(),mainFrame.getHeight());
         for (int i = 0; i < tabbedPane.length ; i++) {

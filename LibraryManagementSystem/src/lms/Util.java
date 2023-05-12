@@ -1,4 +1,4 @@
-package BrahmasmiLiabrary;
+package lms;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -13,7 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.awt.image.BufferedImage;
 
-public class util {
+public class Util {
     public static final int
             labelHeaderX = 50,
             labelHeaderY = 130,
@@ -91,42 +91,42 @@ public class util {
 
     public static void loginButtonDecoration(JButton button) {
         button.setFocusable(false);
-        button.setFont(util.textFieldFont);
+        button.setFont(Util.textFieldFont);
         button.setOpaque(true);
         button.setBackground(purpleColor);
         button.setForeground(Color.WHITE);
-        button.setBorder(util.allSideBorder);
+        button.setBorder(Util.allSideBorder);
     }
 
     public static void labelTextDecoration(JLabel label) {
         label.setForeground(Color.BLACK);
-        label.setFont(util.labelHeaderFont);
+        label.setFont(Util.labelHeaderFont);
         label.setOpaque(true);
     }
 
     public static void labelTextDecoration(JLabel label, boolean opaque) {
         label.setForeground(Color.BLACK);
-        label.setFont(util.labelHeaderFont);
+        label.setFont(Util.labelHeaderFont);
         label.setOpaque(opaque);
     }
 
     public static void headerTextDecoration(JLabel label) {
         label.setForeground(Color.BLACK);
-        label.setFont(util.titleFont);
+        label.setFont(Util.titleFont);
         label.setOpaque(true);
     }
 
     public static void verificationLabelDecoration(JLabel label) {
-        label.setFont(util.textFieldFont);
-        util.setLabelOnCenter(label,0,350,600,40);
+        label.setFont(Util.textFieldFont);
+        Util.setLabelOnCenter(label,0,350,600,40);
     }
 
     
     public static void textFieldDecoration(JTextField textField) {
         textField.setForeground(Color.black);
         textField.setOpaque(false);
-        textField.setBorder(util.underline);
-        textField.setFont(util.textFieldFont);
+        textField.setBorder(Util.underline);
+        textField.setFont(Util.textFieldFont);
     }
 
     public static void setLabelOnCenter(JLabel label, int width, int height) {
@@ -184,13 +184,13 @@ public class util {
     }
 
     public static void setYellowBackgroundAndBottomBorder(JLabel label) {
-        label.setBorder(util.underline);
+        label.setBorder(Util.underline);
         label.setBackground(Color.YELLOW);
         label.setOpaque(true);
     }
 
     public static void setMyFont(JTextField textField) {
-        textField.setFont(util.textFieldFont);
+        textField.setFont(Util.textFieldFont);
     }
 
     public static Color generateGradientColor(Color color1, Color color2, int width, int height) {
