@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.sql.*;
 
 public class LoginPage extends JPanel implements ActionListener, KeyListener {
-    Connection con;
+    private final Connection con;
     private final JFrame mainFrame = new JFrame("Home Page");
     private JLabel passwordLabel;
     private JLabel verificationMessageLabel;
