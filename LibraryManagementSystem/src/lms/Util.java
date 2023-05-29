@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.awt.image.BufferedImage;
+import static java.awt.Toolkit.getDefaultToolkit;
 
 public class Util {
     public static final int
@@ -82,11 +83,9 @@ public class Util {
     }
 
     public static Dimension getScreenDimension() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] screens = ge.getScreenDevices();
-        Insets insets = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(screens[0].getDefaultConfiguration());
-        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        return new Dimension(screenSize.width - insets.left - insets.right, screenSize.height - insets.top - insets.bottom);
+        GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        Insets insets = getDefaultToolkit().getScreenInsets(screens[0].getDefaultConfiguration());
+        return new Dimension(getDefaultToolkit().getScreenSize().width - insets.left - insets.right, getDefaultToolkit().getScreenSize().height - insets.top - insets.bottom);
     }
 
     public static void loginButtonDecoration(JButton button) {
