@@ -8,9 +8,3 @@ create table borrow (
     foreign key (`Student Id`) references student (`Student Id`),
     foreign key (`Accession Id`) references book (`Accession Id`)
 );
-
-insert into borrow (`Borrow Id`, `Student Id`, `Accession Id`, `Borrow Date`, `Return Date`, `Fine Amount`) VALUES 
-(1, 1, 1, '2023-05-01', '2023-05-02', 0);
-
-insert into borrow (`Borrow Id`, `Student Id`, `Accession Id`, `Borrow Date`, `Return Date`, `Fine Amount`) VALUES 
-(?, ?, ?, ?, ?, ?);

@@ -9,14 +9,13 @@ CREATE TABLE student (
 `Address` VARCHAR(255) NOT NULL,
 FOREIGN KEY (`Course`) REFERENCES `course`(`Course Id`)
 );
-
-INSERT INTO student VALUES (
-  2,
+INSERT INTO student (`Student Id`, `Student Name`, `Father Name`, `Course`, `Date Of Birth`, `Gender`, `Phone Number`, `Address`) VALUES (
+  1,
   'Chiranjeev Kashyap',
   'Virendra Kashyap',
-  10,
+  3,
   '2002-05-18',
-  'M',
+  'Male',
   '7983499388',
-  'Shanti Nagar, Rishikesh'
+  'Rishikesh'
 );

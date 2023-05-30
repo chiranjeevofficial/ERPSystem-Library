@@ -10,9 +10,6 @@ create table book (
 `Availability` boolean not null,
 FOREIGN KEY (Course) REFERENCES course(`Course Id`)
 );
-
-insert into book values (1,'Java','Aadi Yogi','DEV','1 edition',3,12,348.60);
-
 INSERT INTO book (`Accession Id`, Title, Author, Publisher, Edition, Course, Date, Price, Availability) VALUES 
 (1, 'Java', 'Mahadev', 'DEV', 'First', 3, '2023-04-28', 670.99, true),
 (2, 'Python', 'Narayan', 'DEV', 'First', 3, '2023-04-29', 499.99, true),

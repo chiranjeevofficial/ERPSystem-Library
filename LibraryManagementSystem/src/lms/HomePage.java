@@ -131,6 +131,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         studentInfoTextField[0].addKeyListener(this);
         studentInfoTextField[1].addFocusListener(this);
         studentInfoTextField[1].addKeyListener(this);
+        studentInfoTextField[3].addFocusListener(this);
         studentInfoTextField[studentInfoTextField.length-2].addKeyListener(this);
         dateChooser[0].setBounds(120,studentInfoTextField[1].getY()+60,200,27);
         newStudentButtons[0].setBounds(studentInfoTextField[studentInfoTextField.length-1].getX(),studentInfoTextField[studentInfoTextField.length-1].getY()+35,90,30);
@@ -248,16 +249,22 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         int xAxisGap = 10, xAxisGapButton = 410;
         for(int i = 0 ; i < labelString.length ; i++) {
             issuedBookLabel[i] = new JLabel(labelString[i]);
-            issuedBookLabel[i].setBounds(xAxisGap,10,80,30);
+            issuedBookLabel[i].setBounds(xAxisGap, 10, 80, 30);
+            if (i == 1) {
+                issuedBookLabel[i].setBounds(xAxisGap + 50, 10, 80, 30);
+            }
             tabbedPane[2].add(issuedBookLabel[i]);
 
             issuedBookTextField[i] = new JTextField(20);
-            issuedBookTextField[i].setBounds(xAxisGap+80,10,100,30);
+            issuedBookTextField[i].setBounds(xAxisGap+80,10,150,30);
+            if (i == 1) {
+                issuedBookTextField[i].setBounds(xAxisGap + 130, 10, 150, 30);
+            }
             issuedBookTextField[i].addKeyListener(this);
             tabbedPane[2].add(issuedBookTextField[i]);
 
             issuedBookButton[i] = new JButton(buttonString[i]);
-            issuedBookButton[i].setBounds(xAxisGapButton,10,issuedBookButton[i].getPreferredSize().width,30);
+            issuedBookButton[i].setBounds(xAxisGapButton + 100, 10, issuedBookButton[i].getPreferredSize().width, 30);
             issuedBookButton[i].addActionListener(this);
             tabbedPane[2].add(issuedBookButton[i]);
 
@@ -1225,7 +1232,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                     clearStudentForm();
                     tabbedPane[0].removeAll();
                     initNewStudentPanel();
-                    JOptionPane.showMessageDialog(null,"Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Student Id: " + (getLatestStudentId()-1) + " Welcome "+student.getStudentName(),"Student Admission Confirmation",JOptionPane.WARNING_MESSAGE);
                     initShowStudentTablePanel();
                 }
                 else
@@ -1404,6 +1411,17 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         if (e.getSource() == studentInfoTextField[1]) {
             if(!studentInfoTextField[1].getText().isEmpty())
                 toStringValidate(studentInfoTextField[1]);
+        }
+        if (e.getSource() == studentInfoTextField[3]) {
+            if(!studentInfoTextField[1].getText().isEmpty()) {
+                boolean addressValidate = true;
+                for (int i = 0 ; i < studentInfoTextField[3].getText().length() ; i++) {
+                    if (!(Character.isLetter(i) && addressValidate))
+                        addressValidate = false;
+                }
+                toStringValidate(studentInfoTextField[3]);
+                
+            }
         }
         if (e.getSource() == bookTextField[1]) {
             if(!bookTextField[1].getText().isEmpty())

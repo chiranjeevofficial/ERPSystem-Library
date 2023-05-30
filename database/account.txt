@@ -1,4 +1,6 @@
 create table account (
     username varchar(50) not null,
-    password varchar(50) not null,
-)
+    password varchar(50) not null
+);
+insert into account (`username`, `password`)
+values ('admin', 'root');
