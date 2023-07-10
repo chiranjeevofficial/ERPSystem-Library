@@ -1,7 +1,4 @@
-package lms;
-
 import com.toedter.calendar.JDateChooser;
-import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -1168,7 +1165,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         return validate;
     }
 
-    public void toStringValidate(@NotNull JTextField textField) {
+    public void toStringValidate(JTextField textField) {
         textField.setText(textField.getText().trim());
         String str = textField.getText();
         String[] words = str.split("\\s+");
@@ -1240,7 +1237,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void actionPerformed(@NotNull ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         if (newStudentButtons[0] == e.getSource()) {
             if (studentFormValidation()) {
                 initializeStudentObject();
@@ -1362,7 +1359,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void keyTyped(@NotNull KeyEvent e) {
+    public void keyTyped(KeyEvent e) {
         if (e.getSource() == studentInfoTextField[studentInfoTextField.length-2]) { //textField validation for phone number
             char ch = e.getKeyChar();
             if (!(Character.isDigit(ch) || ch == KeyEvent.VK_BACK_SPACE || ch == KeyEvent.VK_DELETE))
@@ -1405,7 +1402,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void itemStateChanged(@NotNull ItemEvent e) {
+    public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             bookTextField[0].setEnabled(true);
         } else {
@@ -1420,7 +1417,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     }
 
     @Override
-    public void focusLost(@NotNull FocusEvent e) {
+    public void focusLost(FocusEvent e) {
         if (e.getSource() == studentInfoTextField[0]) {
             if(!studentInfoTextField[0].getText().isEmpty())
                 toStringValidate(studentInfoTextField[0]);

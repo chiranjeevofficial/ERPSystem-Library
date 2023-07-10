@@ -1,5 +1,3 @@
-package lms;
-
 import com.toedter.calendar.JDateChooser;
 
 import javax.imageio.ImageIO;

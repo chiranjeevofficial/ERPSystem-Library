@@ -1,5 +1,3 @@
-package lms;
-
 public class Student {
     private String studentName, fatherName, phoneNumber, address, gender, dateOfBirth;
     private int studentId, courseId;

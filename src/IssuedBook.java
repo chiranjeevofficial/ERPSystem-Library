@@ -1,5 +1,3 @@
-package lms;
-
 public class IssuedBook {
     private int issuedId, studentId, accessionId;
     private String issuedDate;

@@ -1,5 +1,3 @@
-package lms;
-
 public class Borrow {
     private int borrowId, studentId, accessionId;
     private Double fineAmount;

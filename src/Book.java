@@ -1,5 +1,3 @@
-package lms;
-
 public class Book {
     private String title, author, publisher, edition, date;
     private int accessionId, course, quantity;
