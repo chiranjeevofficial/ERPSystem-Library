@@ -148,7 +148,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         DefaultPieDataset dataset = new DefaultPieDataset();
         for(int i = 1 ; i <= 6 ; i++) {
             if (getEnrolledStudentByCourseId(i) > 0)
-                dataset.setValue(courseString[i], getEnrolledStudentByCourseId(i) - 1);
+                dataset.setValue(courseString[i], getEnrolledStudentByCourseId(i));
         }
 
         if (!dataset.getKeys().isEmpty()) {
