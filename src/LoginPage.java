@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class LoginPage extends JPanel implements ActionListener, KeyListener {
     private final Connection con;
-    private final JFrame mainFrame = new JFrame("Home Page");
+    private final JFrame mainFrame = new JFrame("Library - ERPSystem");
     private JLabel passwordLabel;
     private JLabel verificationMessageLabel;
     private JTextField usernameTextField;
@@ -49,10 +49,14 @@ public class LoginPage extends JPanel implements ActionListener, KeyListener {
 
     void setRightPanel() {
         JPanel rightPanel = new JPanel(null);
-        JLabel companyLogo = Util.getImageOnLabel("C:\\icon\\apple.png", 70);
-        JLabel companyName = new JLabel("Apple Inc. Pvt Limited");
+        rightPanel.setBackground(Color.WHITE);
+        JLabel companyLogo = Util.getImageOnLabel("C:\\icon\\spdc_edit.jpg", 70);
+        JLabel companyName = new JLabel("Swami Purnanand Degree College of Technical Education  ");
+        companyName.setBackground(Color.WHITE);
         JLabel usernameLabel = new JLabel("Username");
+        usernameLabel.setBackground(Color.WHITE);
         passwordLabel = new JLabel("Password");
+        passwordLabel.setBackground(Color.WHITE);
         usernameTextField = new JTextField(50);
         passwordField = new JPasswordField(50);
         loginButton = new JButton("Login");

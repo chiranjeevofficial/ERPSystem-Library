@@ -32,7 +32,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
     private final Borrow borrow = Borrow.getInstance();
     private final IssuedBook issuedBook = IssuedBook.getInstance();
     private final JTabbedPane mainTabbedPane;
-    private final JPanel[] tabbedPane = new JPanel[9];
+    private final JPanel[] tabbedPane = new JPanel[8];
     private final JDateChooser[] dateChooser = new JDateChooser[5];
     private JLabel[] returnBookLabels;
     private JButton[] newStudentButtons, newBookButtons, issuedBookButton, returnBookButtons;
@@ -52,7 +52,6 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
                 "Show Book",
                 "Show Issued Book",
                 "Book History",
-                "Find Book"
         };
 
         con = Util.getConnectionWithMySQL("library","root","admin@2023");
@@ -64,7 +63,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
             tabbedPane[i] = new JPanel(null);
             mainTabbedPane.add(tabbedPaneString[i], tabbedPane[i]);
         }
-        mainTabbedPane.setSelectedIndex(8);
+        //mainTabbedPane.setSelectedIndex(8);
         mainTabbedPane.addChangeListener(this);
         initNewStudentPanel();
         initNewBookPanel();
@@ -74,7 +73,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         initShowStudentTablePanel();
         initShowIssuedBookTablePanel();
         initShowLibraryHistoryTablePanel();
-        initFindBookPanel();
+        //initFindBookPanel();
         mainFrame.add(mainTabbedPane);
         mainTabbedPane.revalidate();
         mainTabbedPane.repaint();
@@ -146,7 +145,7 @@ public class HomePage implements ActionListener, KeyListener, ItemListener, Focu
         /* Start implementation of pie chart*/
         // Create a dataset
         DefaultPieDataset dataset = new DefaultPieDataset();
-        for(int i = 1 ; i <= 6 ; i++) {
+        for(int i = 1 ; i <= courseString.length-1 ; i++) {
             if (getEnrolledStudentByCourseId(i) > 0)
                 dataset.setValue(courseString[i], getEnrolledStudentByCourseId(i));
         }
