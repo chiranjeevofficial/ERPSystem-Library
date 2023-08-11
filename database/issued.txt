@@ -1,0 +1,9 @@
+CREATE TABLE issued (
+  `Issued Id` int primary key auto_increment,
+  `Student Id` int not null,
+  `Accession Id` int not null,
+  `Issued Date` varchar(20) not null,
+  `Fine Amount` decimal(10,2) DEFAULT 0.0,
+  foreign key (`Student Id`) references `student`(`Student Id`),
+  foreign key (`Accession Id`) references `book`(`Accession Id`)
+);

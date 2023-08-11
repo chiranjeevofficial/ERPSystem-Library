@@ -1,0 +1,16 @@
+create table book (
+`Accession Id` int primary key auto_increment,
+`Title` varchar(50) not null,
+`Author` varchar(50) not null,
+`Publisher` varchar(50) not null,
+`Edition` varchar(50) not null,
+`Course` int not null,
+`Date` varchar(20) not null,
+`Price` decimal(10,2) not null,
+`Availability` boolean not null,
+FOREIGN KEY (Course) REFERENCES course(`Course Id`)
+);
+INSERT INTO book (`Accession Id`, Title, Author, Publisher, Edition, Course, Date, Price, Availability) VALUES 
+(1, 'Java', 'Mahadev', 'DEV', 'First', 3, '2023-04-28', 670.99, true),
+(2, 'Python', 'Narayan', 'DEV', 'First', 3, '2023-04-29', 499.99, true),
+(3, 'Kotlin', 'Vishu', 'DEV', 'First', 5, '2023-04-30', 399.80, true);
